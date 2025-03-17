@@ -94,10 +94,10 @@ def add_employee():
     add_emp_info(emp_name)
     return jsonify({"message": "Employee added successfully"})
 
-# @application.route("/api/timesheet/user/<string:username>/<string:date>", methods=["GET"])
-# def get_timesheet(username, date):
-#     data = get_emp_data(username,date)
-#     return jsonify({"message": "Employee data fetched successfully", "data": data})
+@application.route("/api/timesheet/admin/<string:username>/<string:date>", methods=["GET"])
+def get_timesheet(username, date):
+    data = get_emp_data(username,date)
+    return jsonify({"message": "Employee data fetched successfully", "data": data})
 
 @application.route("/api/timesheet/user/<string:username>/<string:date>", methods=["GET"])
 def get_user_timesheet(username, date):
