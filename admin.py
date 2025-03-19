@@ -53,3 +53,19 @@ def add_new_user(user_input):
     user_credential = { "Username": user_input["name"], "Password": user_input["password"] }
     collection_emp.insert_one(user_input)
     collection_credential.insert_one(user_credential)
+
+
+def show_user():
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    db = client["Timesheet"]
+    collection = db["Employee_data"]  # Change to your collection name
+
+    # Query to fetch only the required fields (excluding _id)
+    query = {}
+    projection = {"_id": 0, "name": 1, "email": 1, "manager": 1, "designation": 1}
+    
+    # Fetch the data
+    # results = collection.find(query, projection)
+    results = list(collection.find(query, projection))
+    # print(results)
+    return results

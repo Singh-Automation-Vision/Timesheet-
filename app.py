@@ -4,7 +4,7 @@ from Emp_timesheet import add_PM_data, add_AM_data, employee_login,performance_m
 from Emp_info import add_emp_info
 from flask_cors import CORS
 import logging
-from admin import add_new_user,delete_emp,get_emp_data
+from admin import add_new_user,delete_emp,get_emp_data,show_user
 #from pyngrok import ngrok
 import os
 
@@ -114,6 +114,11 @@ def get_user_timesheet(username, date):
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+    
+@application.route("/api/timesheet/showUser", methods=["POST"])
+def user_details():
+    data = show_user()
+    return jsonify({"message": "Employee list fetched successfully", "data": data})
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
