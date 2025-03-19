@@ -115,7 +115,7 @@ def get_user_timesheet(username, date):
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
     
-@application.route("/api/timesheet/showUser", methods=["POST"])
+@application.route("/api/timesheet/showUser", methods=["GET"])
 def user_details():
     data = show_user()
     return jsonify({"message": "Employee list fetched successfully", "data": data})
