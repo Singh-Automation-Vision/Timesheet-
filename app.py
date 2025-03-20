@@ -5,6 +5,7 @@ from Emp_info import add_emp_info
 from flask_cors import CORS
 import logging
 from admin import add_new_user,delete_emp,get_emp_data,show_user
+from Project import retrieve_project,add_project
 #from pyngrok import ngrok
 import os
 
@@ -119,6 +120,22 @@ def get_user_timesheet(username, date):
 def user_details():
     data = show_user()
     return jsonify({"message": "Employee list fetched successfully", "data": data})
+
+@application.route('/api/projects', methods=['GET'])
+def get_projects():
+    projects = retrieve_project()
+    return jsonify(projects)
+
+@application.route('/api/projects', methods=['POST'])
+def add_new_project():
+    """ Add a new project """
+    try:
+        project = request.json
+        add_project(project)
+        return jsonify({"message": "Project added successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
