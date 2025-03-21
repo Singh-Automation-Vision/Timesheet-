@@ -184,7 +184,7 @@ from Project import retrieve_project, add_project, get_project_list
 import os
 from datetime import datetime  # Import datetime for date conversion
 
-application = Flask(_name_)
+application = Flask(__name__)
 
 CORS(application)  # Enable CORS for all origins
 # CORS(application, origins=["https://yourfrontend.com"])  # Restrict to specific frontend
