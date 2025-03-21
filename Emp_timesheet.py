@@ -2,6 +2,7 @@ import json
 from pymongo import MongoClient
 from mail import review_performance
 from werkzeug.security import check_password_hash
+from datetime import datetime
 
 
 
@@ -282,52 +283,124 @@ def add_PM_data(data):
 #     user_input = collection.find_one({"employee_name": email, "date": date})
 #     review_performance(user_input,manager,mail)
 
+# def performance_matrices(email, date, ratings):
+#     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+#     db = client["Timesheet"]
+#     collection = db["Employee_PM"]
+#     print(ratings)
+
+#     # Update the document where email and date match
+#     result = collection.update_one(
+#         {"employee_name": email, "date": date},  # Match condition
+#         {"$set": {"ratings": ratings}}  # Update or insert the ratings field
+#     )
+
+#     if result.matched_count == 0:
+#         print(f"Warning: No matching document found for {email} on {date}. Insert operation might be needed.")
+
+#     emp_name = email
+#     manager, mail = get_manager_details(emp_name)
+
+#     if manager and mail:  # Ensure manager and email exist before proceeding
+#         user_input = collection.find_one({"employee_name": email, "date": date})
+#         if user_input:
+#             review_performance(user_input, manager, mail)
+#         else:
+#             print("Error: Could not retrieve updated employee data.")
+#     else:
+#         print("Error: Manager details missing, cannot proceed with performance review.")
+
+#     return {"message": "Performance data updated successfully"}
+
+"""Fix the performace matrix to get the data properly"""
 def performance_matrices(email, date, ratings):
+
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     collection = db["Employee_PM"]
-    print(ratings)
+    recent_date = get_most_recent_date(email)
+    if not recent_date:
+        print("No records found for the employee.")
+        return
 
-    # Update the document where email and date match
+    
+
+    # Update the document where email and most recent date match
     result = collection.update_one(
-        {"employee_name": email, "date": date},  # Match condition
-        {"$set": {"ratings": ratings}}  # Update or insert the ratings field
+        {"employee_name": email, "date": recent_date},  # Match condition
+        {"$set": {"ratings": ratings}}  # Update the ratings field
     )
 
-    if result.matched_count == 0:
-        print(f"Warning: No matching document found for {email} on {date}. Insert operation might be needed.")
-
+    # Fetch the updated document
     emp_name = email
     manager, mail = get_manager_details(emp_name)
+    user_input = collection.find_one({"employee_name": email, "date": recent_date})
 
-    if manager and mail:  # Ensure manager and email exist before proceeding
-        user_input = collection.find_one({"employee_name": email, "date": date})
-        if user_input:
-            review_performance(user_input, manager, mail)
-        else:
-            print("Error: Could not retrieve updated employee data.")
-    else:
-        print("Error: Manager details missing, cannot proceed with performance review.")
-
-    return {"message": "Performance data updated successfully"}
+    # Call the review performance function
+    review_performance(user_input, manager, mail)
 
 
-def get_latest_employee_am_data(employee_name):
+# def get_latest_employee_am_data(employee_name):
+#     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+#     db = client["Timesheet"]
+#     collection = db["Employee_AM"]
+
+#     # Fetch the most recent data by sorting on the 'date' field in descending order
+#     latest_data = collection.find_one(
+#     {"employee_name": employee_name}, 
+#     sort=[("date", -1)], 
+#     projection={"_id": 0}  # Excludes _id from the result
+#     )
+
+#     if latest_data:
+#         return latest_data  # Return the most recent document
+#     else:
+#         return {"message": f"No data found for {employee_name}"}
+
+def get_latest_employee_am_data(employee_name,date):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
-    collection = db["Employee_AM"]
+    pm_collection = db["Employee_PM"]
+    am_collection = db["Employee_AM"]
+    
+    pm_data_exists = pm_collection.find_one({"employee_name": employee_name, "date": date})
 
-    # Fetch the most recent data by sorting on the 'date' field in descending order
-    latest_data = collection.find_one(
-    {"employee_name": employee_name}, 
-    sort=[("date", -1)], 
-    projection={"_id": 0}  # Excludes _id from the result
+    if pm_data_exists:
+        return {"employee_name": None, "date": None, "hours": None, "tasks": None}
+
+    # If PM data does not exist, retrieve the latest AM data before the current date
+    latest_am_data = am_collection.find_one(
+        {"employee_name": employee_name, "date": {"$lte": date}},  
+        sort=[("date", -1)],  # Sort by date descending (most recent first)
+        projection={"_id": 0}  # Exclude MongoDB _id field
     )
 
-    if latest_data:
-        return latest_data  # Return the most recent document
-    else:
-        return {"message": f"No data found for {employee_name}"}
+    return latest_am_data if latest_am_data else {"employee_name": None, "date": None, "hours": None, "tasks": None}
+    
+
+def get_most_recent_date(employee_name):
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    db = client["Timesheet"]
+    collection = db["Employee_PM"]
+    latest_entry = collection.find_one(
+        {"employee_name": employee_name},  # Filter by employee name
+        sort=[("date", -1)]  # Sort by date in descending order
+    )
+    
+    if latest_entry and "date" in latest_entry:
+        try:
+            # Convert the date to string in "YYYY-MM-DD" format
+            recent_date = latest_entry["date"]
+            if isinstance(recent_date, datetime):  # If stored as a datetime object
+                return recent_date.strftime("%Y-%m-%d")
+            elif isinstance(recent_date, str):  # If stored as a string
+                return datetime.strptime(recent_date, "%Y-%m-%d").strftime("%Y-%m-%d")
+        except Exception as e:
+            print("Error parsing date:", e)
+    
+    return None  # Return None if no record found
+
+
 
 
 # email = "Simar"

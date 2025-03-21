@@ -5,7 +5,7 @@ from Emp_info import add_emp_info
 from flask_cors import CORS
 import logging
 from admin import add_new_user,delete_emp,get_emp_data,show_user
-from Project import retrieve_project,add_project
+from Project import retrieve_project,add_project, get_project_list
 #from pyngrok import ngrok
 import os
 
@@ -100,6 +100,22 @@ def get_timesheet(username, date):
     data = get_emp_data(username,date)
     return jsonify({"message": "Employee data fetched successfully", "data": data})
 
+# @application.route("/api/timesheet/user/<string:username>/<string:date>", methods=["GET"])
+# def get_user_timesheet(username, date):
+#     """
+#     Fetch timesheet data for a specific user and date.
+#     """
+#     try:
+#         # Convert the date string to the expected format
+#         timesheet_entry = get_latest_employee_am_data(username)
+#         if timesheet_entry:
+#             return jsonify({"success": True, "data": timesheet_entry}), 200
+#         else:
+#             return jsonify({"success": False, "message": "No timesheet found"}), 404
+
+#     except Exception as e:
+#         return jsonify({"success": False, "error": str(e)}), 500
+
 @application.route("/api/timesheet/user/<string:username>/<string:date>", methods=["GET"])
 def get_user_timesheet(username, date):
     """
@@ -107,7 +123,7 @@ def get_user_timesheet(username, date):
     """
     try:
         # Convert the date string to the expected format
-        timesheet_entry = get_latest_employee_am_data(username)
+        timesheet_entry = get_latest_employee_am_data(username,date)
         if timesheet_entry:
             return jsonify({"success": True, "data": timesheet_entry}), 200
         else:
@@ -115,6 +131,7 @@ def get_user_timesheet(username, date):
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+    
     
 @application.route("/api/timesheet/showUser", methods=["GET"])
 def user_details():
@@ -136,6 +153,14 @@ def add_new_project():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@application.route('/api/projects', methods=['GET'])
+def get_projects():
+    try:
+        project_names = get_project_list()
+        return jsonify({"success": True, "data": project_names})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
