@@ -357,20 +357,26 @@ def performance_matrices(email, date, ratings):
 #     else:
 #         return {"message": f"No data found for {employee_name}"}
 
-def get_latest_employee_am_data(employee_name,date):
+def get_latest_employee_am_data(username,date):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     pm_collection = db["Employee_PM"]
     am_collection = db["Employee_AM"]
+    try:
+        date_obj = datetime.strptime(date, "%m-%d-%Y")  # Convert to datetime object
+        formatted_date = date_obj.strftime("%Y-%m-%d")  # Convert back to string
+    except ValueError:
+        return {"success": False, "error": "Invalid date format. Expected MM-DD-YYYY"}
+
     
-    pm_data_exists = pm_collection.find_one({"employee_name": employee_name, "date": date})
+    pm_data_exists = pm_collection.find_one({"employee_name": username, "date": formatted_date})
 
     if pm_data_exists:
         return {"employee_name": None, "date": None, "hours": None, "tasks": None}
 
     # If PM data does not exist, retrieve the latest AM data before the current date
     latest_am_data = am_collection.find_one(
-        {"employee_name": employee_name, "date": {"$lte": date}},  
+        {"employee_name": username, "date": {"$lte": formatted_date}},  
         sort=[("date", -1)],  # Sort by date descending (most recent first)
         projection={"_id": 0}  # Exclude MongoDB _id field
     )
@@ -414,3 +420,4 @@ def get_most_recent_date(employee_name):
 # performance_matrices(email,date,ratings)
 # get_latest_employee_am_data(email)
 # print(get_latest_employee_am_data(email))
+print(get_latest_employee_am_data("Sudharshan","2025-03-21"))
