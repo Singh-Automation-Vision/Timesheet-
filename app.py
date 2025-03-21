@@ -154,7 +154,7 @@ def add_new_project():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@application.route('/api/projects', methods=['GET'])
+@application.route('/api/projectslist', methods=['GET'])
 def get_projects():
     try:
         project_names = get_project_list()
