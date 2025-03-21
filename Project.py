@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-
+from collections import OrderedDict
 
 def add_project(project):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
@@ -23,16 +23,17 @@ def retrieve_project():
     collection = db["Projects"]
     project_details = collection.find({}, {"_id": 0, "projectName": 1, "projectNumber": 1, "startDate": 1, "endDate": 1})
     
-    return [
-        {
-            "projectName": project["projectName"],
-            "projectNumber": project["projectNumber"],
-            "startDate": project["startDate"],
-            "endDate": project["endDate"]
-        } 
+    ordered_projects = [
+        OrderedDict([
+            ("projectNumber", project["projectNumber"]),
+            ("projectName", project["projectName"]),
+            ("startDate", project["startDate"]),
+            ("endDate", project["endDate"])
+        ])
         for project in project_details
     ]
 
+    return ordered_projects
 
 def get_project_list():
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
@@ -49,3 +50,5 @@ def get_project_list():
     project_names = [proj["projectName"] for proj in results]
 
     return project_names
+
+print(retrieve_project())
