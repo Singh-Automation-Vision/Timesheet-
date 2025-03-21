@@ -155,7 +155,7 @@ def add_new_project():
         return jsonify({"error": str(e)}), 500
     
 @application.route('/api/projectslist', methods=['GET'])
-def get_projects():
+def get_projectslist():
     try:
         project_names = get_project_list()
         return jsonify({"success": True, "data": project_names})
