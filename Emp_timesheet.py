@@ -389,23 +389,50 @@ def performance_matrices(email, date, ratings):
     # Call the review performance function
     review_performance(user_input, manager, mail)
 
+def format_date_if_needed(date):
+    try:
+        # Check if the date is already in YYYY-MM-DD format
+        datetime.strptime(date, "%Y-%m-%d")
+        return date  # Return unchanged if correct format
 
-def get_latest_employee_am_data(employee_name):
+    except ValueError:
+        # Try converting from MM-DD-YYYY to YYYY-MM-DD
+        try:
+            date_obj = datetime.strptime(date, "%m-%d-%Y")
+            return date_obj.strftime("%Y-%m-%d")  # Convert and return
+
+        except ValueError:
+            return None  # Invalid format, return None
+        
+def get_latest_am_data(username, date):
+    
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
-    collection = db["Employee_AM"]
+    pm_collection = db["Employee_PM"]
+    am_collection = db["Employee_AM"]
+    formatted_date = format_date_if_needed(date)
+    
+    if not formatted_date:
+        return {"success": False, "error": "Invalid date format. Expected MM-DD-YYYY or YYYY-MM-DD"}
 
-    # Fetch the most recent data by sorting on the 'date' field in descending order
-    latest_data = collection.find_one(
-    {"employee_name": employee_name}, 
-    sort=[("date", -1)], 
-    projection={"_id": 0}  # Excludes _id from the result
+    # Check if PM data exists for the given date
+    if pm_collection.find_one({"employee_name": username, "date": formatted_date}):
+        return {"employee_name": None, "date": None, "hours": None, "tasks": None}
+
+    # Get the latest AM data before the given date
+    latest_am_data = am_collection.find_one(
+        {"employee_name": username, "date": {"$lt": formatted_date}},  # Get AM data before the current date
+        sort=[("date", -1)],  # Sort by date descending (most recent first)
+        projection={"_id": 0}  # Exclude MongoDB _id field
     )
 
-    if latest_data:
-        return latest_data  # Return the most recent document
-    else:
-        return {"message": f"No data found for {employee_name}"}
+    # If no AM data exists, return empty response
+    if not latest_am_data:
+        return {"employee_name": None, "date": None, "hours": None, "tasks": None}
+
+    # Recursive call to check if PM data exists for the found AM date
+    return get_latest_am_data(username, latest_am_data["date"]) if pm_collection.find_one({"employee_name": username, "date": latest_am_data["date"]}) else latest_am_data
+
 
 # def get_latest_employee_am_data(username,date):
 #     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
