@@ -404,7 +404,7 @@ def format_date_if_needed(date):
         except ValueError:
             return None  # Invalid format, return None
         
-def get_latest_am_data(username, date):
+def get_latest_employee_am_data(username, date):
     
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -431,7 +431,7 @@ def get_latest_am_data(username, date):
         return {"employee_name": None, "date": None, "hours": None, "tasks": None}
 
     # Recursive call to check if PM data exists for the found AM date
-    return get_latest_am_data(username, latest_am_data["date"]) if pm_collection.find_one({"employee_name": username, "date": latest_am_data["date"]}) else latest_am_data
+    return get_latest_employee_am_data(username, latest_am_data["date"]) if pm_collection.find_one({"employee_name": username, "date": latest_am_data["date"]}) else latest_am_data
 
 
 # def get_latest_employee_am_data(username,date):
