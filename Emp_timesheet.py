@@ -280,7 +280,7 @@ def add_PM_data(data):
 
         # Fetch latest AM date if PM date is missing or empty
         latest_am_date = get_latest_am_date(employee_name)
-        data["date"] = latest_am_date if not data.get("date") else data["date"]
+        data["date"] = latest_am_date 
 
         # Determine shift based on first valid hour
         first_pm_hour = next((entry["hour"] for entry in data["hours"] if entry.get("task")), None)
@@ -421,7 +421,7 @@ def get_latest_employee_am_data(username, date):
 
     # Get the latest AM data before the given date
     latest_am_data = am_collection.find_one(
-        {"employee_name": username, "date": {"$lt": formatted_date}},  # Get AM data before the current date
+        {"employee_name": username, "date": {"$lte": formatted_date}},  # Get AM data before the current date
         sort=[("date", -1)],  # Sort by date descending (most recent first)
         projection={"_id": 0}  # Exclude MongoDB _id field
     )
