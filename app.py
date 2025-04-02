@@ -5,7 +5,7 @@ from Emp_info import add_emp_info
 from flask_cors import CORS
 import logging
 from admin import add_new_user,delete_emp,get_emp_data,show_user, get_timesheet_between_dates, get_am_timesheet_between_dates,get_pm_timesheet_between_dates,get_performance_between_dates, user_details, update_user
-from Project import retrieve_project,add_project, get_project_list, get_project_hours_pm, get_project_detail, delete_project, update_project
+from Project import retrieve_project,add_project, get_project_list, get_project_hours_pm, get_project_detail, delete_project, update_project,project_details_between_dates
 #from pyngrok import ngrok
 from datetime import datetime
 import os
@@ -280,6 +280,18 @@ def edit_project():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@application.route("/api/projects/<string:project_id>/details", defaults={'start_date': None, 'end_date': None}, methods=["GET"])
+@application.route("/api/projects/<string:project_id>/details/<string:start_date>/<string:end_date>", methods=["GET"])
+def get_project_details_between_dates(project_id, start_date, end_date):
+    try:
+      formatted_start_date = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+      formatted_end_date = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+      result = project_details_between_dates(project_id,formatted_start_date,formatted_end_date)
+      return jsonify({"success": True, "data": result})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  

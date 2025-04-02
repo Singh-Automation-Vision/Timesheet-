@@ -277,22 +277,22 @@ def project_details_between_dates(project_name,start_date,end_date):
     collection_pm = db["Employee_PM"]
     collection = db["Projects"]
 
-    try:
-        if not project_name:
-            return {"error": "Project name is required"}
-        
-        formatted_start_date = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
-        formatted_end_date = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
-        
-        
+    #try:
+    #    if not project_name:
+    #        return {"error": "Project name is required"}
+    #    
+    #    formatted_start_date = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+    #    formatted_end_date = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+    #    
+    #    
+#
+    #    if not formatted_start_date or not formatted_end_date:
+    #        return {"error": "Invalid date format. Expected YYYY-MM-DD or MM-DD-YYYY"}
 
-        if not formatted_start_date or not formatted_end_date:
-            return {"error": "Invalid date format. Expected YYYY-MM-DD or MM-DD-YYYY"}
-
-        pipeline = [
+    pipeline = [
     # Step 1: Filter by date range
     {"$match": {
-        "date": {"$gte": formatted_start_date, "$lte": formatted_end_date}  # Filter based on date as a string
+        "date": {"$gte": start_date, "$lte": end_date}  # Filter based on date as a string
     }},
 
     # Step 2: Unwind the hours array to process each hour individually
@@ -333,40 +333,39 @@ def project_details_between_dates(project_name,start_date,end_date):
     }}
     ]
 
-        pm_data = list(collection_pm.aggregate(pipeline))
+    pm_data = list(collection_pm.aggregate(pipeline))
         
 
         # Prepare the list of employees working on the project
-        employees_list = [
-            {
-                "employee_name": emp["_id"],
-                "designation": get_designation(emp["_id"]),
-                "hours": round(emp["total_hours"] / 60, 2)  # Convert minutes to hours
-            }
-            for emp in pm_data if emp["_id"]
-        ]
+    employees_list = [
+        {
+            "employee_name": emp["_id"],
+            "designation": get_designation(emp["_id"]),
+            "hours": round(emp["total_hours"] / 60, 2)  # Convert minutes to hours
+        }
+        for emp in pm_data if emp["_id"]
+    ]
 
         # Retrieve project details
-        project = collection.find_one({"projectName": project_name}, {"_id": 0})
+    project = collection.find_one({"projectName": project_name}, {"_id": 0})
 
-        if not project:
-            return {"error": f"Project '{project_name}' not found"}
+        #if not project:
+        #    return {"error": f"Project '{project_name}' not found"}
 
         # Format project start and end dates if they exist
-        project["startDate"] = format_date(project["startDate"]) if "startDate" in project else "N/A"
-        project["endDate"] = format_date(project["endDate"]) if "endDate" in project else "N/A"
+    project["startDate"] = format_date(project["startDate"]) if "startDate" in project else "N/A"
+    project["endDate"] = format_date(project["endDate"]) if "endDate" in project else "N/A"
+    # Calculate total hours spent on the project
+    total_project_hours = sum(emp["hours"] for emp in employees_list)
 
-        # Calculate total hours spent on the project
-        total_project_hours = sum(emp["hours"] for emp in employees_list)
+    return {
+        "project_details": project,
+        "employees": employees_list,
+        "total_project_hours": total_project_hours
+    }
 
-        return {
-            "project_details": project,
-            "employees": employees_list,
-            "total_project_hours": total_project_hours
-        }
-
-    except Exception as e:
-        return {"error": str(e)}
+    #except Exception as e:
+    #    return {"error": str(e)}
     
 #print(get_project_hours_pm("Nash green house "))
 #print(project_details_between_dates("Nash green house ","03-01-2025","03-25-2025"))
