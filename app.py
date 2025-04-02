@@ -7,6 +7,7 @@ import logging
 from admin import add_new_user,delete_emp,get_emp_data,show_user, get_timesheet_between_dates, get_am_timesheet_between_dates,get_pm_timesheet_between_dates,get_performance_between_dates, user_details, update_user
 from Project import retrieve_project,add_project, get_project_list, get_project_hours_pm, get_project_detail, delete_project, update_project
 #from pyngrok import ngrok
+from datetime import datetime
 import os
 
 application = Flask(__name__)
@@ -184,12 +185,34 @@ def get_project_details(project_id):
     
 @application.route("/api/timesheet/am/<username>/<start_date>/<end_date>", methods=["GET"])
 def get_am_timesheet(username, start_date,end_date):
+    # Convert input date format from MM-DD-YYYY to YYYY-MM-DD
+    formatted_startDate = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+    formatted_endDate = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+    # Convert string dates to datetime objects
+    start = datetime.strptime(formatted_startDate, "%Y-%m-%d")
+    end = datetime.strptime(formatted_endDate, "%Y-%m-%d")
+    # Check if start_date is after end_date
+    if start > end:
+        return jsonify({"message": "Start date cannot be after end date."}),500
     data = get_am_timesheet_between_dates(username,start_date,end_date)
+    if not data:
+            return {"message": "No data found for the given date range."},404
     return jsonify({"message": "Success", "data": data})
 
 @application.route("/api/timesheet/pm/<username>/<start_date>/<end_date>", methods=["GET"])
 def get_pm_timesheet(username,start_date,end_date):
+    # Convert input date format from MM-DD-YYYY to YYYY-MM-DD
+    formatted_startDate = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+    formatted_endDate = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+    # Convert string dates to datetime objects
+    start = datetime.strptime(formatted_startDate, "%Y-%m-%d")
+    end = datetime.strptime(formatted_endDate, "%Y-%m-%d")
+    # Check if start_date is after end_date
+    if start > end:
+        return {"message": "Start date cannot be after end date."},500
     data = get_pm_timesheet_between_dates(username,start_date,end_date)
+    if not data:
+            return {"message": "No data found for the given date range."},404
     return jsonify({"message": "Success", "data": data})
 
 @application.route("/api/matrices/<matrixUsername>/<matrixStartDate>/<matrixEndDate>", methods=["GET"])
