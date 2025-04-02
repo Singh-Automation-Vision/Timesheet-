@@ -506,4 +506,4 @@ def get_latest_am_date(employee_name):
 # performance_matrices(email,date,ratings)
 # get_latest_employee_am_data(email)
 # print(get_latest_employee_am_data(email))
-# print(get_latest_employee_am_data("Sudharshan","2025-03-21"))
+print(get_latest_employee_am_data("Sudharshan","04-02-2025"))

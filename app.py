@@ -128,7 +128,7 @@ def get_user_timesheet(username, date):
     """
     try:
         # Convert the date string to the expected format
-        timesheet_entry = get_latest_employee_am_data(username)
+        timesheet_entry = get_latest_employee_am_data(username,date)
         if timesheet_entry:
             return jsonify({"success": True, "data": timesheet_entry}), 200
         else:

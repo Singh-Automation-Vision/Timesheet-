@@ -271,4 +271,5 @@ def update_project(query,updated_data):
         return {"error": "No updates applied"}
     return {"message": "Project updated successfully"}
 
+
 # print(get_project_hours_pm("Timesheet"))
