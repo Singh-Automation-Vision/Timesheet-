@@ -4,7 +4,7 @@ from Emp_timesheet import add_PM_data, add_AM_data, employee_login,performance_m
 from Emp_info import add_emp_info
 from flask_cors import CORS
 import logging
-from admin import add_new_user,delete_emp,get_emp_data,show_user, get_timesheet_between_dates, get_am_timesheet_between_dates,get_pm_timesheet_between_dates,get_performance_between_dates, user_details, update_user
+from admin import add_new_user,delete_emp,get_emp_data,show_user, get_timesheet_between_dates, get_am_timesheet_between_dates,get_pm_timesheet_between_dates,get_performance_between_dates, user_details,update_user,resource_management
 from Project import retrieve_project,add_project, get_project_list, get_project_hours_pm, get_project_detail, delete_project, update_project,project_details_between_dates
 #from pyngrok import ngrok
 from datetime import datetime
@@ -194,9 +194,9 @@ def get_am_timesheet(username, start_date,end_date):
     # Check if start_date is after end_date
     if start > end:
         return jsonify({"message": "Start date cannot be after end date."}),500
-    data = get_am_timesheet_between_dates(username,start_date,end_date)
+    data = get_am_timesheet_between_dates(username,start,end)
     if not data:
-            return {"message": "No data found for the given date range."},404
+            return jsonify({"message": "No data found for the given date range."}),404
     return jsonify({"message": "Success", "data": data})
 
 @application.route("/api/timesheet/pm/<username>/<start_date>/<end_date>", methods=["GET"])
@@ -210,7 +210,7 @@ def get_pm_timesheet(username,start_date,end_date):
     # Check if start_date is after end_date
     if start > end:
         return {"message": "Start date cannot be after end date."},500
-    data = get_pm_timesheet_between_dates(username,start_date,end_date)
+    data = get_pm_timesheet_between_dates(username,start,end)
     if not data:
             return {"message": "No data found for the given date range."},404
     return jsonify({"message": "Success", "data": data})
@@ -291,6 +291,19 @@ def get_project_details_between_dates(project_id, start_date, end_date):
       return jsonify({"success": True, "data": result})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
+
+@application.route("/api/users/<user_email>/projects/<start_date>/<end_date>", methods=["GET"])
+def get_user_projects(user_email, start_date, end_date):
+    try:
+      formatted_startDate = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+      formatted_endDate = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
+      ## Convert string dates to datetime objects
+      start = datetime.strptime(formatted_startDate, "%Y-%m-%d")
+      end = datetime.strptime(formatted_endDate, "%Y-%m-%d")
+      result = resource_management(user_email,start,end)
+      return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

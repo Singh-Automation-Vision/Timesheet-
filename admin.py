@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from mail import review_performance
 from werkzeug.security import check_password_hash
 from datetime import datetime
+from Project import get_designation
 
 # def add_new_user(user_input):
 #     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
@@ -295,6 +296,53 @@ def update_user(name,updated_data):
     else:
         return {"message": "User updated successfully"}
     
+def resource_management(employee_name,start_date,end_date):
+    start_date_str = start_date.strftime("%Y-%m-%d")
+    end_date_str = end_date.strftime("%Y-%m-%d")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    db = client["Timesheet"]
+    collection = db["Employee_PM"]
+    
+    
+    #print(type(start_date),type(end_date))
+    pipeline = [
+            {"$match": {"employee_name": employee_name, "date": {"$gte": start_date_str, "$lte": end_date_str}}},
+            {"$unwind": "$hours"},
+            {"$project": {
+                "hour": "$hours.hour",
+                "projects": {"$objectToArray": "$hours.projects"}  # Convert projects dict to array
+            }},
+            {"$unwind": "$projects"},
+            {"$group": {
+                "_id": "$projects.v",
+                "total_hours": {"$sum": 1}  # Each occurrence represents an hour spent
+            }},
+            {"$project": {
+                "_id" : 0,
+                "project_name": "$_id",
+                "hours": {"$multiply": ["$total_hours", 1.0]}  # Convert to float for accuracy
+            }}
+        ]
+
+    print(f"Querying for employee: {employee_name}, Start Date: {start_date}, End Date: {end_date}")
+    
+    designation = get_designation(employee_name)
+    
+    project_data = list(collection.aggregate(pipeline))
+    total_hours = sum(item["hours"] for item in project_data)
+    response_data = {
+            "data": {
+                "user_details": {
+                    "name": employee_name,
+                    "designation": designation
+                },
+                "projects": project_data,
+                "total_hours": round(total_hours, 2)
+            }
+        }
+
+    return response_data
+    
 
 # data = {
 #   "name": "Sudharshan",
@@ -308,11 +356,20 @@ def update_user(name,updated_data):
 # update_user("Sudharshan",data)
 
 # user_details("Sudharshan")
-#start_date = "03-14-2025"
-#end_date = "04-01-2025"
+#start_date = "03-28-2025"
+#end_date = "04-02-2025"
+#
 #formatted_startDate = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
 #formatted_endDate = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
-## Convert string dates to datetime objects
+### Convert string dates to datetime objects
 #start = datetime.strptime(formatted_startDate, "%Y-%m-%d")
 #end = datetime.strptime(formatted_endDate, "%Y-%m-%d")
-#print(get_pm_timesheet_between_dates("Sudharshan",start,end))
+#data = get_am_timesheet_between_dates("Bhargav",start_date,end_date)
+#
+#if not data:
+#    print("no data")
+#print(data)
+#start_date = datetime.strptime(start_date, "%Y-%m-%d")
+#end_date = datetime.strptime(end_date, "%Y-%m-%d")
+
+#print(resource_management("Bhargav",start,end))
