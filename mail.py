@@ -8,7 +8,7 @@ def send_alert_email(user_input_PM, red_count,manager,mail):
     sender_email = "timesheetsystem2025@gmail.com"
     receiver_email = mail
     smtp_email = sender_email  # Using the same email for SMTP login
-    smtp_password = "uuvy njws mrkn kibh"  # Use an app password instead of your actual password
+    smtp_password = "mhuv nxdf ciqz igws"  # Use an app password instead of your actual password
 
     subject = "⚠ Alert: Employee Performance Issue"
     body = f"Dear {manager},\n\nEmployee {user_input_PM['employee_name']} has {red_count} performance issues marked as RED today.\nPlease review the timesheet for further action.\n\nBest regards,\nTimesheet System"

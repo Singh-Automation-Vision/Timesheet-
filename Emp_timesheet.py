@@ -495,15 +495,15 @@ def get_latest_am_date(employee_name):
 
 
 
-# email = "Simar"
-# date = "2025-03-17"
-# ratings = {
+#email = "Sudharshan"
+#date = "2025-04-04"
+#ratings = {
 #     "Performance of the Day": "Green",
 #     "First Time Quality": "Yellow",
 #     "On-Time Delivery": "Red",
 #     "Engagement and Support": "Red"
 # }
-# performance_matrices(email,date,ratings)
+#performance_matrices(email,date,ratings)
 # get_latest_employee_am_data(email)
 # print(get_latest_employee_am_data(email))
-#print(get_latest_employee_am_data("Sudharshan","04-02-2025"))
+#print(get_latest_employee_am_data("Sudharshan","04-05-2025"))
