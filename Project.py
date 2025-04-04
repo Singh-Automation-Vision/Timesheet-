@@ -74,7 +74,7 @@ def get_project_detail(project_name,projectNumber):
 
 def get_designation(employee_name):
     # print(employee_name)
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     collection = db["Employee_data"]
 
@@ -272,7 +272,7 @@ def update_project(query,updated_data):
     return {"message": "Project updated successfully"}
 
 def project_details_between_dates(project_name,start_date,end_date):
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     collection_pm = db["Employee_PM"]
     collection = db["Projects"]
@@ -353,6 +353,7 @@ def project_details_between_dates(project_name,start_date,end_date):
         #    return {"error": f"Project '{project_name}' not found"}
 
         # Format project start and end dates if they exist
+    print(project)
     project["startDate"] = format_date(project["startDate"]) if "startDate" in project else "N/A"
     project["endDate"] = format_date(project["endDate"]) if "endDate" in project else "N/A"
     # Calculate total hours spent on the project
@@ -368,4 +369,4 @@ def project_details_between_dates(project_name,start_date,end_date):
     #    return {"error": str(e)}
     
 #print(get_project_hours_pm("Nash green house "))
-#print(project_details_between_dates("Nash green house ","03-01-2025","03-25-2025"))
+#print(project_details_between_dates("INTEVA-Gantry Sewing Automation","03-26-2025","04-03-2025"))
