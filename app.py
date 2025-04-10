@@ -100,11 +100,11 @@ def matrices():
     return jsonify({"message": "Performance matrices updated successfully"})
 
 # Add new employee
-@application.route("/api/add_employee", methods=["POST"])  # Fixed: Added missing route
-def add_employee():
-    emp_name = request.json
-    add_emp_info(emp_name)
-    return jsonify({"message": "Employee added successfully"})
+#@application.route("/api/add_employee", methods=["POST"])  # Fixed: Added missing route
+#def add_employee():
+#    emp_name = request.json
+#    add_emp_info(emp_name)
+#    return jsonify({"message": "Employee added successfully"})
 
 # @application.route("/api/timesheet/admin/<string:username>/<string:date>", methods=["GET"])
 # def get_timesheet(username, date):
