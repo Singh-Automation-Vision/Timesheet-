@@ -319,33 +319,66 @@ def resource_management(employee_name,start_date,end_date):
 
     #Mongodb query pipeline
     pipeline = [
-    {"$match": {
-        "employee_name": employee_name,
-        "date": {"$gte": start_date_str, "$lte": end_date_str}
-    }},
+    {
+        "$match": {
+            "employee_name": employee_name,
+            "date": {"$gte": start_date_str, "$lte": end_date_str}
+        }
+    },
     {"$unwind": "$hours"},
-    {"$project": {
-        "hour": "$hours.hour",
-        "projects_array": {"$objectToArray": "$hours.projects"}
-    }},
-    {"$addFields": {
-        "project_count": {"$size": "$projects_array"}
-    }},
-    {"$unwind": "$projects_array"},
-    {"$project": {
-        "project_name": "$projects_array.v",
-        "partial_hour": {"$divide": [1, "$project_count"]}  # 1 hour divided among all projects
-    }},
-    {"$group": {
-        "_id": "$project_name",
-        "hours": {"$sum": "$partial_hour"}
-    }},
-    {"$project": {
-        "_id": 0,
-        "project_name": "$_id",
-        "hours": {"$round": ["$hours", 2]}
-    }}
+    
+    # Ensure 'projects' exists
+    {
+        "$match": {
+            "hours.projects": {"$ne": None}
+        }
+    },
+
+    # Convert 'projects' dict to array
+    {
+        "$project": {
+            "hour": "$hours.hour",
+            "projects": {"$objectToArray": "$hours.projects"}
+        }
+    },
+    
+    # Add project count
+    {
+        "$addFields": {
+            "project_count": {"$size": "$projects"}
+        }
+    },
+    
+    # Unwind projects
+    {"$unwind": "$projects"},
+
+    # Each project gets 1 / project_count
+    {
+        "$project": {
+            "project_name": "$projects.v",
+            "fractional_hour": {
+                "$divide": [1, "$project_count"]
+            }
+        }
+    },
+
+    # Group by project name and sum fractional hours
+    {
+        "$group": {
+            "_id": "$project_name",
+            "hours": {"$sum": "$fractional_hour"}
+        }
+    },
+
+    {
+        "$project": {
+            "_id": 0,
+            "project_name": "$_id",
+            "hours": {"$round": ["$hours", 2]}
+        }
+    }
 ]
+
 
     print(f"Querying for employee: {employee_name}, Start Date: {start_date}, End Date: {end_date}")
     
@@ -379,8 +412,8 @@ def resource_management(employee_name,start_date,end_date):
 # update_user("Sudharshan",data)
 
 # user_details("Sudharshan")
-#start_date = "03-28-2025"
-#end_date = "04-10-2025"
+#start_date = "03-25-2025"
+#end_date = "04-04-2025"
 ##
 #formatted_startDate = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
 #formatted_endDate = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
