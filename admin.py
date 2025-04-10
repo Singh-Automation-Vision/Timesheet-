@@ -11,29 +11,33 @@ from Project import get_designation
 #     collection_emp = db["Employee_data"]    
 #     result = collection_emp.insert_one(user_input)
 
+# Delete employee from database
 def delete_emp(emp_name):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     collection = db["Employee_data"]
+    collection_credential = db["Employee_credentials"]
     collection_AM =db["Employee_AM"]
     collection_PM =db["Employee_PM"]
     collection.delete_one({"name": emp_name})
+    collection_credential.delete_one({"Username": emp_name})
     collection_AM.delete_many({"employee_name": emp_name})
     collection_PM.delete_many({"employee_name": emp_name})
 
-def get_emp_data(emp_name,date):
-    try:
-        formatted_date = datetime.strptime(date, "%m-%d-%Y").strftime("%Y-%m-%d")
-    except ValueError:
-        return {"error": "Invalid date format. Use MM-DD-YYYY."}
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
-    collection = db["Employee_PM"]
-    collection_AM = db["Employee_AM"]
-    emp_data_PM = collection.find_one({"employee_name": emp_name, "date": formatted_date},{"_id":0})
-    emp_data_AM = collection_AM.find_one({"employee_name": emp_name, "date": formatted_date},{"_id":0})
-    emp_data = { "PM": emp_data_PM, "AM": emp_data_AM }
-    return emp_data
+#Get employee data for a given date
+#def get_emp_data(emp_name,date):
+#    try:
+#        formatted_date = datetime.strptime(date, "%m-%d-%Y").strftime("%Y-%m-%d")
+#    except ValueError:
+#        return {"error": "Invalid date format. Use MM-DD-YYYY."}
+#    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+#    db = client["Timesheet"]
+#    collection = db["Employee_PM"]
+#    collection_AM = db["Employee_AM"]
+#    emp_data_PM = collection.find_one({"employee_name": emp_name, "date": formatted_date},{"_id":0})
+#    emp_data_AM = collection_AM.find_one({"employee_name": emp_name, "date": formatted_date},{"_id":0})
+#    emp_data = { "PM": emp_data_PM, "AM": emp_data_AM }
+#    return emp_data
 
 
 # def add_new_user(user_input):
@@ -45,7 +49,7 @@ def get_emp_data(emp_name,date):
 #     collection_emp.insert_one(user_credential)
 #     collection_credential.insert_one(user_input)
 
-
+# Add new employee to the database
 def add_new_user(user_input):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -55,7 +59,7 @@ def add_new_user(user_input):
     collection_emp.insert_one(user_input)
     collection_credential.insert_one(user_credential)
 
-
+# Retrieve employee details to display in frontend
 def show_user():
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -71,12 +75,14 @@ def show_user():
     # print(results)
     return results
 
+# Convert the date format as per the frontend
 def convert_date_format(data):
             for doc in data:
                 if "date" in doc:
                     doc["date"] = datetime.strptime(doc["date"], "%Y-%m-%d").strftime("%m-%d-%Y")
             return data
 
+# Retrive timesheet data for given date range
 def get_timesheet_between_dates(emp_name,startDate,endDate):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -127,6 +133,7 @@ def get_timesheet_between_dates(emp_name,startDate,endDate):
     except Exception as e:
         return {"error": f"An unexpected error occurred: {str(e)}"}
 
+# Retrieve PM sheet of an employee for a given date range
 def get_pm_timesheet_between_dates(emp_name,start,end):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -175,7 +182,7 @@ def get_pm_timesheet_between_dates(emp_name,start,end):
     #except Exception as e:
     #    return {"error": f"An unexpected error occurred: {str(e)}"}
     
-
+# Retrieve AM sheet of an employee for a given date range
 def get_am_timesheet_between_dates(emp_name,start,end):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -223,6 +230,7 @@ def get_am_timesheet_between_dates(emp_name,start,end):
     #except Exception as e:
     #    return {"error": f"An unexpected error occurred: {str(e)}"}
 
+# Retrieve performance matrices of an employee for a given date range
 def get_performance_between_dates(emp_name,startDate,endDate):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -239,7 +247,7 @@ def get_performance_between_dates(emp_name,startDate,endDate):
         # Check if start_date is after end_date
         if start > end:
             return {"error": "Start date cannot be after end date."}
-        print(start,end)
+        
         # MongoDB query (convert stored string dates to datetime)
         query = {
             "$expr": {
@@ -273,14 +281,16 @@ def get_performance_between_dates(emp_name,startDate,endDate):
     except Exception as e:
         return {"error": f"An unexpected error occurred: {str(e)}"}
 
+# Retrieve list of employees from database
 def user_details(name):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     collection = db["Employee_data"]
     result = list(collection.find({"name":name},{"_id":0}))
-    print(result)
+    
     return result
 
+# Update Employee information in database
 def update_user(name,updated_data):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -295,7 +305,8 @@ def update_user(name,updated_data):
         return {"error": "No updates applied"}
     else:
         return {"message": "User updated successfully"}
-    
+
+# Retrive employee data from the database for a given date range    
 def resource_management(employee_name,start_date,end_date):
     start_date_str = start_date.strftime("%Y-%m-%d")
     end_date_str = end_date.strftime("%Y-%m-%d")
@@ -305,8 +316,10 @@ def resource_management(employee_name,start_date,end_date):
     
     
     #print(type(start_date),type(end_date))
+
+    #Mongodb query pipeline
     pipeline = [
-            {"$match": {"employee_name": employee_name, "date": {"$gte": start_date_str, "$lte": end_date_str}}},
+            {"$match": {"employee_name": employee_name, "date": {"$gte": start_date_str, "$lte": end_date_str}}},# search for an employee name from start and end date
             {"$unwind": "$hours"},
             {"$project": {
                 "hour": "$hours.hour",
@@ -330,14 +343,14 @@ def resource_management(employee_name,start_date,end_date):
     
     project_data = list(collection.aggregate(pipeline))
     total_hours = sum(item["hours"] for item in project_data)
-    response_data = {
+    response_data = {    #Employee data contains employee name, designation, list of projects and total hours spent 
             "data": {
                 "user_details": {
                     "name": employee_name,
                     "designation": designation
                 },
                 "projects": project_data,
-                "total_hours": round(total_hours, 2)
+                "total_hours": total_hours
             }
         }
 

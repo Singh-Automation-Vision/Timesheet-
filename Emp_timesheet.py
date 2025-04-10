@@ -6,36 +6,36 @@ from datetime import datetime
 
 
 
-def convert_to_time_range(time_str):
-    from datetime import datetime, timedelta
-    
-    try:
-        start_time = datetime.strptime(time_str, "%I:%M %p")
-        end_time = start_time + timedelta(hours=1)
-        return f"{start_time.strftime('%I:%M')}-{end_time.strftime('%I:%M')}"
-    except ValueError:
-        return time_str  # Return as-is if format is unexpected
+#def convert_to_time_range(time_str):
+#    from datetime import datetime, timedelta
+#    
+#    try:
+#        start_time = datetime.strptime(time_str, "%I:%M %p")
+#        end_time = start_time + timedelta(hours=1)
+#        return f"{start_time.strftime('%I:%M')}-{end_time.strftime('%I:%M')}"
+#    except ValueError:
+#        return time_str  # Return as-is if format is unexpected
 
 
-def transform_timesheet(data):
-    transformed_data = {
-        "employee_name": data["employee_name"],
-        "date": data["date"],
-        "hours": []
-    }
+#def transform_timesheet(data):
+#    transformed_data = {
+#        "employee_name": data["employee_name"],
+#        "date": data["date"],
+#        "hours": []
+#    }
+#
+#    for hour, details in data["hours"].items():
+#        if details["description"].strip():  # Ignore empty descriptions
+#            transformed_data["hours"].append({
+#                "hour": convert_to_time_range(hour),
+#                "task": details["description"],
+#                "progress": details.get("status", "Not Set"),
+#                "comments": details.get("comment", "")
+#            })
+#
+#    return transformed_data
 
-    for hour, details in data["hours"].items():
-        if details["description"].strip():  # Ignore empty descriptions
-            transformed_data["hours"].append({
-                "hour": convert_to_time_range(hour),
-                "task": details["description"],
-                "progress": details.get("status", "Not Set"),
-                "comments": details.get("comment", "")
-            })
-
-    return transformed_data
-
-
+# Authenticate employee based on username and password
 def employee_login(emp_name,emp_password):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -68,6 +68,7 @@ def employee_login(emp_name,emp_password):
 #         mail = value["managerEmail"]
 #     return manager,mail
 
+# Fetch manager name and email for a given employee
 def get_manager_details(emp_name):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -117,7 +118,7 @@ def get_manager_details(emp_name):
 #     result = collection.insert_one(formatted_data)
 #     print(f"AM Data inserted with record id: {result.inserted_id}")
 
-
+# Add or update AM (morning) timesheet data for an employee
 def add_AM_data(data):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -268,7 +269,7 @@ def add_AM_data(data):
 #     except Exception as e:
 #         return f"Error: {str(e)}"
 
-######### replcaing for 3 projects adding
+# Add PM timesheet to the database
 def add_PM_data(data):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -362,7 +363,7 @@ def add_PM_data(data):
 
 #     return {"message": "Performance data updated successfully"}
 
-"""Fix the performace matrix to get the data properly"""
+# Add performance matrices to the PM sheet
 def performance_matrices(email, date, ratings):
 
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
@@ -389,6 +390,7 @@ def performance_matrices(email, date, ratings):
     # Call the review performance function
     review_performance(user_input, manager, mail)
 
+# Formatting the date
 def format_date_if_needed(date):
     try:
         # Check if the date is already in YYYY-MM-DD format
@@ -403,7 +405,8 @@ def format_date_if_needed(date):
 
         except ValueError:
             return None  # Invalid format, return None
-        
+
+# Fetch the latest AM data from the database 
 def get_latest_employee_am_data(username, date):
     
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
@@ -460,7 +463,7 @@ def get_latest_employee_am_data(username, date):
 
 #     return latest_am_data if latest_am_data else {"employee_name": None, "date": None, "hours": None, "tasks": None}
     
-
+# Fetch the most recent date from the database
 def get_most_recent_date(employee_name):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
@@ -483,6 +486,7 @@ def get_most_recent_date(employee_name):
     
     return None  # Return None 
 
+# Fetch the most recent date stored in AM sheet for an employee
 def get_latest_am_date(employee_name):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]

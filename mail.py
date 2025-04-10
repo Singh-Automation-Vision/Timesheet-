@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import smtplib
 from email.mime.text import MIMEText
 
-
+# Send the alert mail to the manager if the performance is red
 def send_alert_email(user_input_PM, red_count,manager,mail):
     sender_email = "timesheetsystem2025@gmail.com"
     receiver_email = mail
@@ -73,7 +73,7 @@ def send_alert_email(user_input_PM, red_count,manager,mail):
 #    except KeyError as e:
 #         print(f"KeyError: Missing field {e}")
 
-    
+# Check if any of the performance matrices is red  
 def review_performance(user_input_PM,manager,mail):
     # ratings = user_input_PM.get("ratings", {})
  
@@ -102,7 +102,7 @@ def review_performance(user_input_PM,manager,mail):
          ]
          
          red_count = performance_params.count("Red")
-         print(f"Red Count: {red_count}")
+         #print(f"Red Count: {red_count}")
  
          if red_count >= 1:
              send_alert_email(user_input_PM, red_count, manager, mail)

@@ -2,16 +2,20 @@ from pymongo import MongoClient
 from collections import OrderedDict
 from datetime import datetime
 
-def add_project(project):
+# Connect the mongodb database
+def get_db():
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    return client["Timesheet"]
+
+# Add a new project to database
+def add_project(project):
+    db = get_db()
     collection = db["Projects"]
     collection.insert_one(project)
     
-
+# Fetch list of projects from database
 def get_project_list():
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    db = get_db()
     collection = db["Projects"]  # Change to your collection name
 
     query = {}
@@ -31,10 +35,9 @@ def format_date(date_str):
     except (ValueError, TypeError):
         return date_str  # If the format is incorrect or None, return as is
 
-
+# Fetch project details
 def retrieve_project():
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    db = get_db()
     collection = db["Projects"]
     project_details = collection.find({}, {"_id": 0, "projectName": 1, "projectNumber": 1, "startDate": 1, "endDate": 1})
     
@@ -61,9 +64,10 @@ def retrieve_project():
 
 #     return data
 
+# Fetch full details of a specific project based on name and number
 def get_project_detail(project_name,projectNumber):
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    
+    db = get_db()
     collection = db["Projects"]
 
     data = list(collection.find({"projectName":project_name,"projectNumber":projectNumber},{"_id":0}))
@@ -72,10 +76,11 @@ def get_project_detail(project_name,projectNumber):
 
     return data
 
+# Fetch employee designation from 'Employee_data' collection
 def get_designation(employee_name):
     # print(employee_name)
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    
+    db = get_db()
     collection = db["Employee_data"]
 
     data = collection.find({"name":employee_name})
@@ -182,10 +187,9 @@ def get_designation(employee_name):
 
 
 
-##### replacing for 3 projects 
+# Compute total hours spent on a project by all employees using the PM data
 def get_project_hours_pm(project_name):
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    db = get_db()
     collection_pm = db["Employee_PM"]
     
     collection = db["Projects"]
@@ -250,16 +254,16 @@ def get_project_hours_pm(project_name):
     except Exception as e:
         return {"error": str(e)}
 
+# Delete a project based on project number and name
 def delete_project(project_number,project_name):
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    db = get_db()
     collection = db["Projects"]
     result = collection.delete_one({"projectName":project_name})
     return result
 
+# Update a project based on query filter and updated data
 def update_project(query,updated_data):
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    db = get_db()
     projects_collection = db["Projects"]
     project = projects_collection.find_one(query)
     print(query)
@@ -271,9 +275,9 @@ def update_project(query,updated_data):
         return {"error": "No updates applied"}
     return {"message": "Project updated successfully"}
 
+# Get employee hours on a project within a specific date range
 def project_details_between_dates(project_name,start_date,end_date):
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    db = client["Timesheet"]
+    db = get_db()
     collection_pm = db["Employee_PM"]
     collection = db["Projects"]
 
@@ -353,7 +357,7 @@ def project_details_between_dates(project_name,start_date,end_date):
         #    return {"error": f"Project '{project_name}' not found"}
 
         # Format project start and end dates if they exist
-    print(project)
+    #print(project)
     project["startDate"] = format_date(project["startDate"]) if "startDate" in project else "N/A"
     project["endDate"] = format_date(project["endDate"]) if "endDate" in project else "N/A"
     # Calculate total hours spent on the project

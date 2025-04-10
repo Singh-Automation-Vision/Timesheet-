@@ -10,8 +10,10 @@ from Project import retrieve_project,add_project, get_project_list, get_project_
 from datetime import datetime
 import os
 
+# Initialize Flask app
 application = Flask(__name__)
 
+# Logging setup
 CORS(application) 
 #CORS(application, resources={r"/": {"origins": ""}}) # Enable CORS for frontend-backend communication
 #
@@ -20,10 +22,12 @@ CORS(application)
 #public_url = ngrok.connect(port).public_url
 #print(f"Ngrok Tunnel URL: {public_url}")
 
+# Root route to verify backend is working
 @application.route("/")
 def home():
     return jsonify({"message": "Backend is running successfully!"})
 
+# Route to fetch all available API routes
 @application.route("/api/routes", methods=["GET"])
 def get_routes():
     return jsonify([str(rule) for rule in application.url_map.iter_rules()])
@@ -35,6 +39,7 @@ logging.basicConfig(level=logging.DEBUG)
 #    application.logger.error(f"Error: {e}", exc_info=True)
 #    return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
+# Login route for employee/admin authentication
 @application.route("/api/login", methods=["POST"])
 def login():
     data = request.json
@@ -55,13 +60,14 @@ def login():
         return jsonify({"error": "Invalid username or password"}), 401
 
 
-
+# Route to submit AM timesheet
 @application.route("/api/AM", methods=["POST"])
 def add_AM_timesheet():
     data = request.json
     add_AM_data(data)
     return jsonify({"message": "Timesheet added successfully"})
 
+# Route to submit PM timesheet
 @application.route("/api/PM", methods=["POST"])
 def add_PM_timesheet():
     data = request.json
@@ -69,18 +75,21 @@ def add_PM_timesheet():
     add_PM_data(data)
     return jsonify({"message": "Timesheet added successfully"})
 
+# Add a new user (admin functionality)
 @application.route("/api/users", methods=["POST"])
 def new_users():
     data = request.json
     add_new_user(data)
     return jsonify({"message": "Timesheet added successfully"})
 
+# Delete user by email (admin functionality)
 @application.route("/api/users/email/<string:email>", methods=["DELETE"])
 def delete_user(email):
     
     delete_emp(email)
     return jsonify({"message": "Employee deleted successfully"})
 
+# Update performance matrices
 @application.route("/api/matrices", methods=["POST"])
 def matrices():
     data = request.json
@@ -90,6 +99,7 @@ def matrices():
     performance_matrices(email, date, ratings)
     return jsonify({"message": "Performance matrices updated successfully"})
 
+# Add new employee
 @application.route("/api/add_employee", methods=["POST"])  # Fixed: Added missing route
 def add_employee():
     emp_name = request.json
@@ -101,6 +111,7 @@ def add_employee():
 #     data = get_emp_data(username,date)
 #     return jsonify({"message": "Employee data fetched successfully", "data": data})
 
+# Fetch timesheet for employee between two dates (admin)
 @application.route("/api/timesheet/admin/<string:username>/<string:startDate>/<string:endDate>", methods=["GET"])
 def get_timesheet(username, startDate,endDate):
     data = get_timesheet_between_dates(username,startDate,endDate)
@@ -122,6 +133,7 @@ def get_timesheet(username, startDate,endDate):
 #     except Exception as e:
 #         return jsonify({"success": False, "error": str(e)}), 500
 
+# Fetch user's AM timesheet by date
 @application.route("/api/timesheet/user/<string:username>/<string:date>", methods=["GET"])
 def get_user_timesheet(username, date):
     """
@@ -138,17 +150,19 @@ def get_user_timesheet(username, date):
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
     
-    
+# Show list of all users
 @application.route("/api/timesheet/showUser", methods=["GET"])
 def all_user_details():
     data = show_user()
     return jsonify({"message": "Employee list fetched successfully", "data": data})
 
+# Fetch all projects
 @application.route('/api/projects', methods=['GET'])
 def get_projects():
     projects = retrieve_project()
     return jsonify(projects)
 
+# Add a new project
 @application.route('/api/projects', methods=['POST'])
 def add_new_project():
     """ Add a new project """
@@ -159,7 +173,8 @@ def add_new_project():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+# Get all project names and numbers   
 @application.route('/api/projectslist', methods=['GET'])
 def get_projectslist():
     try:
@@ -167,7 +182,8 @@ def get_projectslist():
         return jsonify({"success": True, "data": project_names})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-    
+
+# Get detailed information about a specific project    
 @application.route("/api/projects/<string:project_id>/details", methods=["GET"])
 def get_project_details(project_id):
     try:
@@ -182,7 +198,8 @@ def get_project_details(project_id):
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-    
+
+# Get AM timesheet data for a user between two dates    
 @application.route("/api/timesheet/am/<username>/<start_date>/<end_date>", methods=["GET"])
 def get_am_timesheet(username, start_date,end_date):
     # Convert input date format from MM-DD-YYYY to YYYY-MM-DD
@@ -199,6 +216,7 @@ def get_am_timesheet(username, start_date,end_date):
             return jsonify({"message": "No data found for the given date range."}),404
     return jsonify({"message": "Success", "data": data})
 
+# Get PM timesheet data for a user between two dates
 @application.route("/api/timesheet/pm/<username>/<start_date>/<end_date>", methods=["GET"])
 def get_pm_timesheet(username,start_date,end_date):
     # Convert input date format from MM-DD-YYYY to YYYY-MM-DD
@@ -215,11 +233,13 @@ def get_pm_timesheet(username,start_date,end_date):
             return {"message": "No data found for the given date range."},404
     return jsonify({"message": "Success", "data": data})
 
+# Get performance matrices between two dates
 @application.route("/api/matrices/<matrixUsername>/<matrixStartDate>/<matrixEndDate>", methods=["GET"])
 def get_performance(matrixUsername,matrixStartDate,matrixEndDate):
     data = get_performance_between_dates(matrixUsername,matrixStartDate,matrixEndDate)
     return jsonify({"message": "Success", "data": data})
 
+# Search project by name and number
 @application.route("/api/projects/search", methods=["POST"])
 def search_project():
     data = request.json
@@ -236,6 +256,7 @@ def search_project():
 #         return jsonify({"error": "User not found"}), 404
 #     return jsonify(user)
 
+# Delete a project by project name and number
 @application.route("/api/projects/delete", methods=["POST"])
 def delete_project_from_db():
     try:
@@ -248,7 +269,7 @@ def delete_project_from_db():
     except Exception as e:
         return jsonify({"message": f"Error: {str(e)}"}), 500
 
-#fetch user details
+# Fetch user details by email
 @application.route("/api/users/email/<email>", methods=["GET"])
 def get_user(email):
     user = user_details(email)  # Fetch user from DB
@@ -258,13 +279,14 @@ def get_user(email):
 
     return jsonify(user), 200
 
+# Update user information
 @application.route("/api/users/email/<string:email>", methods=["PUT"])
 def edit_user(email):
     data = request.json
     result = update_user(email,data)
     return jsonify(result)
 
-#Update the existing project
+# Update project - incomplete function in your original code
 @application.route("/api/projects/update", methods=["POST"])
 def edit_project():
     try:
@@ -280,7 +302,8 @@ def edit_project():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+# Route to get project details between given start and end dates   
 @application.route("/api/projects/<string:project_id>/details", defaults={'start_date': None, 'end_date': None}, methods=["GET"])
 @application.route("/api/projects/<string:project_id>/details/<string:start_date>/<string:end_date>", methods=["GET"])
 def get_project_details_between_dates(project_id, start_date, end_date):
@@ -292,6 +315,7 @@ def get_project_details_between_dates(project_id, start_date, end_date):
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
 
+# Route to get user-specific projects within a date range
 @application.route("/api/users/<user_email>/projects/<start_date>/<end_date>", methods=["GET"])
 def get_user_projects(user_email, start_date, end_date):
     try:
