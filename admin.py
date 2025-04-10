@@ -319,23 +319,33 @@ def resource_management(employee_name,start_date,end_date):
 
     #Mongodb query pipeline
     pipeline = [
-            {"$match": {"employee_name": employee_name, "date": {"$gte": start_date_str, "$lte": end_date_str}}},# search for an employee name from start and end date
-            {"$unwind": "$hours"},
-            {"$project": {
-                "hour": "$hours.hour",
-                "projects": {"$objectToArray": "$hours.projects"}  # Convert projects dict to array
-            }},
-            {"$unwind": "$projects"},
-            {"$group": {
-                "_id": "$projects.v",
-                "total_hours": {"$sum": 1}  # Each occurrence represents an hour spent
-            }},
-            {"$project": {
-                "_id" : 0,
-                "project_name": "$_id",
-                "hours": {"$multiply": ["$total_hours", 1.0]}  # Convert to float for accuracy
-            }}
-        ]
+    {"$match": {
+        "employee_name": employee_name,
+        "date": {"$gte": start_date_str, "$lte": end_date_str}
+    }},
+    {"$unwind": "$hours"},
+    {"$project": {
+        "hour": "$hours.hour",
+        "projects_array": {"$objectToArray": "$hours.projects"}
+    }},
+    {"$addFields": {
+        "project_count": {"$size": "$projects_array"}
+    }},
+    {"$unwind": "$projects_array"},
+    {"$project": {
+        "project_name": "$projects_array.v",
+        "partial_hour": {"$divide": [1, "$project_count"]}  # 1 hour divided among all projects
+    }},
+    {"$group": {
+        "_id": "$project_name",
+        "hours": {"$sum": "$partial_hour"}
+    }},
+    {"$project": {
+        "_id": 0,
+        "project_name": "$_id",
+        "hours": {"$round": ["$hours", 2]}
+    }}
+]
 
     print(f"Querying for employee: {employee_name}, Start Date: {start_date}, End Date: {end_date}")
     
@@ -350,7 +360,7 @@ def resource_management(employee_name,start_date,end_date):
                     "designation": designation
                 },
                 "projects": project_data,
-                "total_hours": total_hours
+                "total_hours": round(total_hours,2)
             }
         }
 
@@ -370,11 +380,11 @@ def resource_management(employee_name,start_date,end_date):
 
 # user_details("Sudharshan")
 #start_date = "03-28-2025"
-#end_date = "04-02-2025"
-#
+#end_date = "04-10-2025"
+##
 #formatted_startDate = datetime.strptime(start_date, "%m-%d-%Y").strftime("%Y-%m-%d")
 #formatted_endDate = datetime.strptime(end_date, "%m-%d-%Y").strftime("%Y-%m-%d")
-### Convert string dates to datetime objects
+#### Convert string dates to datetime objects
 #start = datetime.strptime(formatted_startDate, "%Y-%m-%d")
 #end = datetime.strptime(formatted_endDate, "%Y-%m-%d")
 #data = get_am_timesheet_between_dates("Bhargav",start_date,end_date)
@@ -385,4 +395,4 @@ def resource_management(employee_name,start_date,end_date):
 #start_date = datetime.strptime(start_date, "%Y-%m-%d")
 #end_date = datetime.strptime(end_date, "%Y-%m-%d")
 
-#print(resource_management("Bhargav",start,end))
+#print(resource_management("Kanakasri",start,end))
