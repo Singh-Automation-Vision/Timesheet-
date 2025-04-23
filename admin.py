@@ -90,7 +90,7 @@ def get_timesheet_between_dates(emp_name,startDate,endDate):
     collection_AM = db["Employee_AM"]
     try:
         # Convert input date format from MM-DD-YYYY to YYYY-MM-DD
-        formatted_startDate = datetime.strptime(startDate, "%m-%d-%Y").strftime("%Y-%m-%d")
+        formatted_startDate = datetime.strptime(startDate, "%m-%d-%Y").strftime("%Y-%m-%d") #important
         formatted_endDate = datetime.strptime(endDate, "%m-%d-%Y").strftime("%Y-%m-%d")
 
         # Convert string dates to datetime objects
@@ -138,19 +138,7 @@ def get_pm_timesheet_between_dates(emp_name,start,end):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     collection_PM = db["Employee_PM"]
-    #try:
-    #    # Convert input date format from MM-DD-YYYY to YYYY-MM-DD
-    #    formatted_startDate = datetime.strptime(startDate, "%m-%d-%Y").strftime("%Y-%m-%d")
-    #    formatted_endDate = datetime.strptime(endDate, "%m-%d-%Y").strftime("%Y-%m-%d")
-#
-    #    # Convert string dates to datetime objects
-    #    start = datetime.strptime(formatted_startDate, "%Y-%m-%d")
-    #    end = datetime.strptime(formatted_endDate, "%Y-%m-%d")
-#
-    #    # Check if start_date is after end_date
-    #    if start > end:
-    #        return {"error": "Start date cannot be after end date."}
-
+    
         # MongoDB query (convert stored string dates to datetime)
     query = {
         "$expr": {

@@ -1,0 +1,13 @@
+1./api/routes
+2./api/login
+3./api/AM
+4./api/timesheet/am/<username>/<start_date>/<end_date>
+5./api/PM
+6./api/timesheet/pm/<username>/<start_date>/<end_date>
+7./api/timesheet/user/<username>/<date>
+8./api/timesheet/admin/<username>/<startDate>/<endDate>
+9./api/timesheet/showUser
+10./api/users
+11./api/users/email/<email>
+13./api/matrices
+14./api/matrices/<username>/<startDate>/<endDate>

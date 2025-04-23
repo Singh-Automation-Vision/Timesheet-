@@ -373,4 +373,4 @@ def project_details_between_dates(project_name,start_date,end_date):
     #    return {"error": str(e)}
     
 #print(get_project_hours_pm("Nash green house "))
-#print(project_details_between_dates("INTEVA-Gantry Sewing Automation","03-26-2025","04-03-2025"))
+print(project_details_between_dates("INTEVA-Gantry Sewing Automation","03-26-2025","04-03-2025"))
