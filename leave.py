@@ -38,10 +38,10 @@ def send_email_to_manager(manager_email, employee_name, start_date, end_date, re
         print(f"Failed to send email: {e}")
 
 def submit_leave_request(leave_data):
-    client = MongoClient("mongodb://localhost:27017/")
+    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
-    emp_data_collection = db["Employee_data"]
+    emp_data_collection = db["employee_data"]
     leave_collection = db["Leave_Requests"]
 
     required_fields = ["name", "leaveType", "startDate", "endDate", "reason", "days", "submissionDate"]
@@ -70,7 +70,7 @@ def submit_leave_request(leave_data):
     result = leave_collection.insert_one(leave_request)
 
     # Get manager's email using employee's name
-    emp_data = emp_data_collection.find_one({"fullName": leave_data["name"]})
+    emp_data = emp_data_collection.find_one({"name": leave_data["name"]})
     if emp_data and "manager_email" in emp_data:
         manager_email = emp_data["manager_email"]
         send_email_to_manager(manager_email, leave_data["name"], leave_data["startDate"], leave_data["endDate"], leave_data["reason"])
@@ -87,8 +87,8 @@ def submit_leave_request(leave_data):
 # For testing
 if __name__ == "__main__":
     leave_data = {
-        "name": "Naveen",
-        "email": "naveen@singhautomation.com",
+        "name": "Sudharshan",
+        
         "days": 1,
         "startDate": "2025-06-10",
         "endDate": "2025-06-10",
