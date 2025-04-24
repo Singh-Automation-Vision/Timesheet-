@@ -6,6 +6,7 @@ from flask_cors import CORS
 import logging
 from admin import add_new_user,delete_emp,show_user, get_timesheet_between_dates, get_am_timesheet_between_dates,get_pm_timesheet_between_dates,get_performance_between_dates, user_details,update_user,resource_management
 from Project import retrieve_project,add_project, get_project_list, get_project_hours_pm, get_project_detail, delete_project, update_project,project_details_between_dates
+from leave import *
 #from pyngrok import ngrok
 from datetime import datetime
 import os
@@ -328,6 +329,16 @@ def get_user_projects(user_email, start_date, end_date):
       return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+#endpoint for leave request by naveen 
+@application.route("/api/leave-request", methods=["POST"]) 
+def leave_request_api():
+    try:
+        leave_data = request.json
+        result = submit_leave_request(leave_data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
