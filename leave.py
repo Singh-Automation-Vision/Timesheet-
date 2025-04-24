@@ -85,16 +85,16 @@ def submit_leave_request(leave_data):
 
 
 # For testing
-if __name__ == "__main__":
-    leave_data = {
-        "name": "Sudharshan",
+# if __name__ == "__main__":
+#     leave_data = {
+#         "name": "Sudharshan",
         
-        "days": 1,
-        "startDate": "2025-06-10",
-        "endDate": "2025-06-10",
-        "leaveType": "Vacation",
-        "reason": "Medical leave",
-        "submissionDate": "2025-05-01"
-    }
-    result = submit_leave_request(leave_data)
-    print(result)
+#         "days": 1,
+#         "startDate": "2025-06-10",
+#         "endDate": "2025-06-10",
+#         "leaveType": "Vacation",
+#         "reason": "Medical leave",
+#         "submissionDate": "2025-05-01"
+#     }
+#     result = submit_leave_request(leave_data)
+#     print(result)
