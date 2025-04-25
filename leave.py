@@ -88,7 +88,6 @@ def submit_leave_request(leave_data):
 # if __name__ == "__main__":
 #     leave_data = {
 #         "name": "Sudharshan",
-        
 #         "days": 1,
 #         "startDate": "2025-06-10",
 #         "endDate": "2025-06-10",
