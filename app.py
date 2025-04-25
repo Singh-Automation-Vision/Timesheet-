@@ -370,10 +370,11 @@ def leave_request_api():
         return jsonify({
             "success": True,
             "name": employee_name,
-            "Total_leave": total_leave,
-            "Leave_taken": leave_taken,
-            "Remaining_leave": remaining_leave
+            "totalLeaves": total_leave,
+            "usedLeaves": leave_taken,
+            "remainingLeaves": remaining_leave
         })
+  
 
 
 if __name__ == "__main__":
