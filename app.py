@@ -331,50 +331,71 @@ def get_user_projects(user_email, start_date, end_date):
         return jsonify({"error": str(e)}), 500
     
 #endpoint for leave request by naveen 
-# @application.route("/api/leave-request", methods=["POST"]) 
-# def leave_request_api():
-#     try:
-#         leave_data = request.json
-#         result = submit_leave_request(leave_data)
-#         return jsonify(result)
-#     except Exception as e:
-#         return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
-
-@application.route("/api/leave-request", methods=["GET", "POST"])
+@application.route("/api/leave-request", methods=["POST"]) 
 def leave_request_api():
+    try:
+        leave_data = request.json
+        result = submit_leave_request(leave_data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
+
+# @application.route("/api/leave-request", methods=["GET", "POST"])
+# def leave_request_api():
+#     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+#     db = client["Timesheet"]
+#     emp_collection = db["Employee_leavedetails"]
+
+#     if request.method == "POST":
+#         try:
+#             leave_data = request.json
+#             result = submit_leave_request(leave_data)  # your existing logic
+#             return jsonify(result)
+#         except Exception as e:
+#             return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
+
+#     elif request.method == "GET":
+#         employee_name = request.args.get("name")
+#         if not employee_name:
+#             return jsonify({"success": False, "message": "Name is required"}), 400
+
+#         employee = emp_collection.find_one({"name": employee_name})
+#         if not employee:
+#             return jsonify({"success": False, "message": "Employee not found"}), 404
+
+#         total_leave = employee.get("Total_leave", 0)
+#         leave_taken = employee.get("Leave_taken", 0)
+#         remaining_leave = total_leave - leave_taken
+
+#         return jsonify({
+#             "success": True,
+#             "name": employee_name,
+#             "totalLeaves": total_leave,
+#             "usedLeaves": leave_taken,
+#             "remainingLeaves": remaining_leave
+#         })
+  
+@application.route("/api/leave-request/available/<string:name>", methods=["GET"])
+def get_leave_status(name):
     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
 
-    if request.method == "POST":
-        try:
-            leave_data = request.json
-            result = submit_leave_request(leave_data)  # your existing logic
-            return jsonify(result)
-        except Exception as e:
-            return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
+    employee = emp_collection.find_one({"name": name})
+    if not employee:
+        return jsonify({"success": False, "message": "Employee not found"}), 404
 
-    elif request.method == "GET":
-        employee_name = request.args.get("name")
-        if not employee_name:
-            return jsonify({"success": False, "message": "Name is required"}), 400
+    total_leave = employee.get("Total_leave", 0)
+    leave_taken = employee.get("Leave_taken", 0)
+    remaining_leave = total_leave - leave_taken
 
-        employee = emp_collection.find_one({"name": employee_name})
-        if not employee:
-            return jsonify({"success": False, "message": "Employee not found"}), 404
-
-        total_leave = employee.get("Total_leave", 0)
-        leave_taken = employee.get("Leave_taken", 0)
-        remaining_leave = total_leave - leave_taken
-
-        return jsonify({
-            "success": True,
-            "name": employee_name,
-            "totalLeaves": total_leave,
-            "usedLeaves": leave_taken,
-            "remainingLeaves": remaining_leave
-        })
-  
+    return jsonify({
+        "success": True,
+        "name": name,
+        "Total_leave": total_leave,
+        "Leave_taken": leave_taken,
+        "Remaining_leave": remaining_leave
+    })
 
 
 if __name__ == "__main__":
