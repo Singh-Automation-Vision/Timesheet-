@@ -403,6 +403,17 @@ def leave_requests_api():
     leave_requests = get_leave_requests()
     return jsonify(leave_requests)
 
+
+@application.route('/api/leave-request/by-name/<employee_name>', methods=['GET'])
+def fetch_leave_by_name(employee_name):
+    leave_request = get_leave_request_by_name(employee_name)
+    
+    if isinstance(leave_request, tuple):  # (data, 404)
+        return jsonify(leave_request[0]), leave_request[1]
+    
+    return jsonify(leave_request)
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
     application.run(host="0.0.0.0", port=port)

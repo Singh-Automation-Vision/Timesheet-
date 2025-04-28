@@ -291,16 +291,16 @@ def get_leave_requests():
 
 
 
-# def get_leave_request_by_name(employee_name):
-#     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-#     db = client["Timesheet"]
-#     leave_collection = db["Leave_Requests"]
+def get_leave_request_by_name(employee_name):
+    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    db = client["Timesheet"]
+    leave_collection = db["Leave_Requests"]
 
-#     leave = leave_collection.find_one({'employee_name': employee_name})
+    leave = leave_collection.find_one({'employee_name': employee_name})
 
-#     if leave:
-#         leave.pop('_id', None)  # 🔥 Remove _id from the response
-#         print(leave)
-#     else:
-#         print({"error": "Leave request not found"}), 404
+    if leave:
+        leave.pop('_id', None)  # 🔥 Remove _id from the response
+        return leave
+    else:
+        return {"error": "Leave request not found"}, 404
 # get_leave_request_by_name("Sudharshan")
