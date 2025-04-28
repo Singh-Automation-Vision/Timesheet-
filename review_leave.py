@@ -188,62 +188,66 @@ def send_leave_email(recipient_email, employee_name, status, days, start_date):
 
 #     return {"success": True, "message": f"Leave request for {employee_name} {new_status.lower()} and email sent."}
 
-def review_leave_request(employee_name, decision):
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-    db = client["Timesheet"]
-    emp_collection = db["Employee_leavedetails"]
-    leave_collection = db["Leave_Requests"]
-    employee_data = db["employee_data"]
 
-    # Find the latest pending leave request
-    leave_request = leave_collection.find_one({"employee_name": employee_name, "status": "Pending"})
-    if not leave_request:
-        return {"success": False, "message": "No pending leave request found for this employee."}
 
-    days = leave_request["days_requested"]
-    start_date = leave_request["start_date"]
+####################################################################################################
 
-    # Get email from employee_data
-    emp_record = employee_data.find_one({"name": employee_name})
-    if not emp_record or "email" not in emp_record:
-        return {"success": False, "message": "Employee email not found."}
+# def review_leave_request(employee_name, decision):
+#     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+#     db = client["Timesheet"]
+#     emp_collection = db["Employee_leavedetails"]
+#     leave_collection = db["Leave_Requests"]
+#     employee_data = db["employee_data"]
 
-    recipient_email = emp_record["email"]
+#     # Find the latest pending leave request
+#     leave_request = leave_collection.find_one({"employee_name": employee_name, "status": "Pending"})
+#     if not leave_request:
+#         return {"success": False, "message": "No pending leave request found for this employee."}
 
-    # Decision logic
-    if decision.lower() == "approve":
-        # Update leave balances
-        emp_collection.update_one(
-            {"name": employee_name},
-            {
-                "$inc": {
-                    "Remmaining_leave": -days,
-                    "Leave_taken": days
-                }
-            }
-        )
-        new_status = "Approved"
-        destination_collection = db["Approved_request"]
+#     days = leave_request["days_requested"]
+#     start_date = leave_request["start_date"]
 
-    elif decision.lower() == "reject":
-        new_status = "Rejected"
-        destination_collection = db["Rejected_request"]
+#     # Get email from employee_data
+#     emp_record = employee_data.find_one({"name": employee_name})
+#     if not emp_record or "email" not in emp_record:
+#         return {"success": False, "message": "Employee email not found."}
 
-    else:
-        return {"success": False, "message": "Invalid decision. Use 'approve' or 'reject'"}
+#     recipient_email = emp_record["email"]
 
-    # Remove _id to avoid DuplicateKeyError
-    leave_request.pop("_id", None)
-    leave_request["status"] = new_status
+#     # Decision logic
+#     if decision.lower() == "approve":
+#         # Update leave balances
+#         emp_collection.update_one(
+#             {"name": employee_name},
+#             {
+#                 "$inc": {
+#                     "Remmaining_leave": -days,
+#                     "Leave_taken": days
+#                 }
+#             }
+#         )
+#         new_status = "Approved"
+#         destination_collection = db["Approved_request"]
 
-    # Delete from Leave_Requests and move to destination
-    leave_collection.delete_one({"employee_name": employee_name, "status": "Pending"})
-    destination_collection.insert_one(leave_request)
+#     elif decision.lower() == "reject":
+#         new_status = "Rejected"
+#         destination_collection = db["Rejected_request"]
 
-    # Send email to employee
-    send_leave_email(recipient_email, employee_name, new_status, days, start_date)
+#     else:
+#         return {"success": False, "message": "Invalid decision. Use 'approve' or 'reject'"}
 
-    return {"success": True, "message": f"Leave request for {employee_name} {new_status.lower()} and email sent."}
+#     # Remove _id to avoid DuplicateKeyError
+#     leave_request.pop("_id", None)
+#     leave_request["status"] = new_status
+
+#     # Delete from Leave_Requests and move to destination
+#     leave_collection.delete_one({"employee_name": employee_name, "status": "Pending"})
+#     destination_collection.insert_one(leave_request)
+
+#     # Send email to employee
+#     send_leave_email(recipient_email, employee_name, new_status, days, start_date)
+
+#     return {"success": True, "message": f"Leave request for {employee_name} {new_status.lower()} and email sent."}
 
 # Example usage
 # if __name__ == "__main__":
@@ -263,6 +267,63 @@ def review_leave_request(employee_name, decision):
 #     leave_requests = list(leave_collection.find())
 #     print(leave_requests)
 # get_leave_requests()
+
+def review_leave_request(employee_name, status):
+    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    db = client["Timesheet"]
+    emp_collection = db["Employee_leavedetails"]
+    leave_collection = db["Leave_Requests"]
+    employee_data = db["employee_data"]
+
+    # Find the latest pending leave request
+    leave_request = leave_collection.find_one({"employee_name": employee_name, "status": "Pending"})
+    if not leave_request:
+        return {"success": False, "message": "No pending leave request found for this employee."}
+
+    days = leave_request["days_requested"]
+    start_date = leave_request["start_date"]
+
+    # Get employee email
+    emp_record = employee_data.find_one({"name": employee_name})
+    if not emp_record or "email" not in emp_record:
+        return {"success": False, "message": "Employee email not found."}
+
+    recipient_email = emp_record["email"]
+
+    # Based on status directly
+    if status == "Approved":
+        # Update leave balances
+        emp_collection.update_one(
+            {"name": employee_name},
+            {
+                "$inc": {
+                    "Remmaining_leave": -days,
+                    "Leave_taken": days
+                }
+            }
+        )
+        destination_collection = db["Approved_request"]
+
+    elif status == "Rejected":
+        destination_collection = db["Rejected_request"]
+
+    else:
+        return {"success": False, "message": "Invalid status. Must be 'Approved' or 'Rejected'."}
+
+    # Prepare leave request for moving
+    leave_request.pop("_id", None)
+    leave_request["status"] = status
+
+    # Move leave request
+    leave_collection.delete_one({"employee_name": employee_name, "status": "Pending"})
+    destination_collection.insert_one(leave_request)
+
+    # Send email
+    send_leave_email(recipient_email, employee_name, status, days, start_date)
+
+    return {"success": True, "message": f"Leave request for {employee_name} {status.lower()} and email sent."}
+
+
 
 def get_leave_requests():
     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
