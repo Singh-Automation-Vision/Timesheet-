@@ -3,7 +3,7 @@ from email.mime.text import MIMEText
 from pymongo import MongoClient
 from datetime import datetime
 
-def send_email_to_manager(manager_email, employee_name, start_date, end_date, reason):
+def send_email_to_manager(manager_email, employee_name, start_date, end_date, reason, leave_type):
     sender_email = "timesheetsystem2025@gmail.com"
     sender_password = "mhuv nxdf ciqz igws"  
 
@@ -17,6 +17,7 @@ def send_email_to_manager(manager_email, employee_name, start_date, end_date, re
     From: {start_date}
     To: {end_date}
     Reason: {reason}
+    Leave Type:{leave_type}
 
     Please log in to the system to review and take action.
 
@@ -73,7 +74,7 @@ def submit_leave_request(leave_data):
     emp_data = emp_data_collection.find_one({"name": leave_data["name"]})
     if emp_data and "manager_email" in emp_data:
         manager_email = emp_data["manager_email"]
-        send_email_to_manager(manager_email, leave_data["name"], leave_data["startDate"], leave_data["endDate"], leave_data["reason"])
+        send_email_to_manager(manager_email, leave_data["name"], leave_data["startDate"], leave_data["endDate"], leave_data["reason"], leave_data["leaveType"])
     else:
         print("Manager email not found in Employee_data collection")
 
@@ -85,15 +86,15 @@ def submit_leave_request(leave_data):
 
 
 # For testing
-# if __name__ == "__main__":
-#     leave_data = {
-#         "name": "Sudharshan",
-#         "days": 1,
-#         "startDate": "2025-06-10",
-#         "endDate": "2025-06-10",
-#         "leaveType": "Vacation",
-#         "reason": "Medical leave",
-#         "submissionDate": "2025-05-01"
-#     }
-#     result = submit_leave_request(leave_data)
-#     print(result)
+if __name__ == "__main__":
+    leave_data = {
+        "name": "Sudharshan",
+        "days": 1,
+        "startDate": "2025-07-17",
+        "endDate": "2025-07-17",
+        "leaveType": "Vacation",
+        "reason": "Medical leave",
+        "submissionDate": "2025-05-01"
+    }
+    result = submit_leave_request(leave_data)
+    print(result)

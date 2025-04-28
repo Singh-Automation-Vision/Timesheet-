@@ -397,6 +397,10 @@ def get_leave_status(name):
         "Remaining_leave": remaining_leave
     })
 
+@application.route('/api/leave-request', methods=['GET'])
+def leave_requests_api():
+    leave_requests = get_leave_requests()
+    return jsonify(leave_requests)
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
