@@ -263,7 +263,6 @@ def review_leave_request(employee_name, decision):
 #     leave_requests = list(leave_collection.find())
 #     print(leave_requests)
 # get_leave_requests()
-from pymongo import MongoClient
 
 def get_leave_requests():
     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -287,7 +286,7 @@ def get_leave_requests():
         # Remove _id if needed
         leave.pop('_id', None)
 
-    print(leave_requests)
+    return leave_requests
 
 
 
