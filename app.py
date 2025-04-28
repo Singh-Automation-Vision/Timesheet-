@@ -413,7 +413,28 @@ def fetch_leave_by_name(employee_name):
     
     return jsonify(leave_request)
 
+@application.route('/api/leave-request/by-name/<employee_name>/status', methods=['PUT'])
+def update_leave_request_status(employee_name):
+    # Get the JSON body sent from frontend
+    data = request.get_json()
 
+    if not data or 'status' not in data:
+        return jsonify({"success": False, "message": "Status is required in request body."}), 400
+
+    decision = data['status']  # Should be 'Approved' or 'Rejected'
+
+    # Call the function you wrote
+    result = review_leave_request(employee_name, decision)
+
+    # Handle the output
+    if result.get("success"):
+        return jsonify({
+            "message": result.get("message")
+        }), 200
+    else:
+        return jsonify({
+            "error": result.get("message")
+        }), 400
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
     application.run(host="0.0.0.0", port=port)
