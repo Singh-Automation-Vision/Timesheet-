@@ -26,11 +26,18 @@ def send_leave_email(recipient_email, employee_name, status, days, start_date):
 
 
 def review_leave_request(employee_name, status):
+    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    # db = client["Timesheet"]
+    # emp_collection = db["Employee_leavedetails"]
+    # leave_collection = db["Leave_Requests"]
+    # employee_data = db["employee_data"]
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
     emp_data_collection = db["Employee_data"]
     leave_collection = db["Leave_Requests"]
+    
+
     # Find the latest pending leave request
     leave_request = leave_collection.find_one({"employee_name": employee_name, "status": "Pending"})
     if not leave_request:
@@ -40,7 +47,7 @@ def review_leave_request(employee_name, status):
     start_date = leave_request["start_date"]
 
     # Get employee email
-    emp_record = employee_data.find_one({"name": employee_name})
+    emp_record = emp_data_collection.find_one({"name": employee_name})
     if not emp_record or "email" not in emp_record:
         return {"success": False, "message": "Employee email not found."}
 
