@@ -39,10 +39,10 @@ def send_email_to_manager(manager_email, employee_name, start_date, end_date, re
         print(f"Failed to send email: {e}")
 
 def submit_leave_request(leave_data):
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
-    emp_data_collection = db["employee_data"]
+    emp_data_collection = db["Employee_data"]
     leave_collection = db["Leave_Requests"]
 
     required_fields = ["name", "leaveType", "startDate", "endDate", "reason", "days", "submissionDate"]
@@ -86,15 +86,15 @@ def submit_leave_request(leave_data):
 
 
 # For testing
-if __name__ == "__main__":
-    leave_data = {
-        "name": "Sudharshan",
-        "days": 1,
-        "startDate": "2025-07-17",
-        "endDate": "2025-07-17",
-        "leaveType": "Vacation",
-        "reason": "Medical leave",
-        "submissionDate": "2025-05-01"
-    }
-    result = submit_leave_request(leave_data)
-    print(result)
+# if __name__ == "__main__":
+#     leave_data = {
+#         "name": "Sudharshan",
+#         "days": 1,
+#         "startDate": "2025-07-17",
+#         "endDate": "2025-07-17",
+#         "leaveType": "Vacation",
+#         "reason": "Medical leave",
+#         "submissionDate": "2025-05-01"
+#     }
+#     result = submit_leave_request(leave_data)
+#     print(result)
