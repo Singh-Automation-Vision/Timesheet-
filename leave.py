@@ -589,14 +589,14 @@ def submit_leave_request(leave_data):
         return {"success": False, "message": "Employee not found"}
 
     # Check if the leave type is valid and if there's enough leave balance
-    if leave_data["leaveType"].lower() == "Medical Leave":
+    if leave_data["leaveType"] == "Medical Leave":
         sick_leave_hours = employee.get("Sick_leave_hours", 0)
         if sick_leave_hours < requested_hours:
             return {"success": False, "message": "Not enough sick leave hours"}
         else:
             # Deduct from sick leave hours
             emp_collection.update_one({"name": leave_data["name"]}, {"$inc": {"Sick_leave_hours": -requested_hours}})
-    elif leave_data["leaveType"].lower() != "Medical Leave":
+    elif leave_data["leaveType"] != "Medical Leave":
         casual_leave_hours = employee.get("Casual_leave_hours", 0)
         if casual_leave_hours < requested_hours:
             return {"success": False, "message": "Not enough casual leave hours"}

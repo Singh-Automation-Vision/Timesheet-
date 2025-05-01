@@ -113,7 +113,7 @@ def review_leave_request(employee_name, status):
     if status == "Approved":
         update_query = {"$inc": {"Remaining_leave_hours": -hours_requested}}
         
-        if leave_type == "medical leave":
+        if leave_type == "Medical Leave":
             update_query["$inc"]["Sick_leave_hours_used"] = hours_requested
         else:
             update_query["$inc"]["Casual_leave_hours_used"] = hours_requested
@@ -200,4 +200,4 @@ def get_leave_request_by_name(employee_name):
         return leave
     else:
         return {"error": "Leave request not found"}, 404
-# get_leave_request_by_name("Sudharshan")
+# # get_leave_request_by_name("Sudharshan")

@@ -344,29 +344,55 @@ def leave_request_api():
   
 @application.route("/api/leave-request/available/<string:name>", methods=["GET"])
 def get_leave_status(name):
-    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-    # db = client["Timesheet"]
-    # emp_collection = db["Employee_leavedetails"]
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
-    
 
     employee = emp_collection.find_one({"name": name})
     if not employee:
         return jsonify({"success": False, "message": "Employee not found"}), 404
 
-    total_leave = employee.get("Total_leave", 0)
-    leave_taken = employee.get("Leave_taken", 0)
-    remaining_leave = total_leave - leave_taken
+    total_leave_hours = employee.get("Total_leave_hours", 0)
+    sick_leave_hours = employee.get("Sick_leave_hours", 0)
+    casual_leave_hours = employee.get("Casual_leave_hours", 0)
+    sick_leave_hours_used = employee.get("Sick_leave_hours_used", 0)
+    casual_leave_hours_used = employee.get("Casual_leave_hours_used", 0)
+    remaining_leave_hours = employee.get("Remaining_leave_hours", 0)
 
     return jsonify({
         "success": True,
         "name": name,
-        "Total_leave": total_leave,
-        "Leave_taken": leave_taken,
-        "Remaining_leave": remaining_leave
+        "Total_leave_hours": total_leave_hours,
+        "Sick_leave_hours": sick_leave_hours,
+        "Sick_leave_hours_used": sick_leave_hours_used,
+        "Casual_leave_hours": casual_leave_hours,
+        "Casual_leave_hours_used": casual_leave_hours_used,
+        "Remaining_leave_hours": remaining_leave_hours
     })
+# def get_leave_status(name):
+#     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+#     db = client["Timesheet"]
+#     emp_collection = db["Employee_leavedetails"]
+#     # client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+#     # db = client["Timesheet"]
+#     # emp_collection = db["Employee_leavedetails"]
+    
+
+#     employee = emp_collection.find_one({"name": name})
+#     if not employee:
+#         return jsonify({"success": False, "message": "Employee not found"}), 404
+
+#     total_leave = employee.get("Total_leave", 0)
+#     leave_taken = employee.get("Leave_taken", 0)
+#     remaining_leave = total_leave - leave_taken
+
+#     return jsonify({
+#         "success": True,
+#         "name": name,
+#         "Total_leave": total_leave,
+#         "Leave_taken": leave_taken,
+#         "Remaining_leave": remaining_leave
+#     })
 
 @application.route('/api/leave-request', methods=['GET'])
 def leave_requests_api():
