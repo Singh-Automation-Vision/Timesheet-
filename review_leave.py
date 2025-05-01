@@ -113,7 +113,7 @@ def review_leave_request(employee_name, status):
     if status == "Approved":
         update_query = {"$inc": {"Remaining_leave_hours": -hours_requested}}
         
-        if leave_type == "Medical Leave":
+        if leave_type == "medical leave":
             update_query["$inc"]["Sick_leave_hours_used"] = hours_requested
         else:
             update_query["$inc"]["Casual_leave_hours_used"] = hours_requested
@@ -140,13 +140,13 @@ def review_leave_request(employee_name, status):
     return {"success": True, "message": f"Leave request for {employee_name} {status.lower()} and email sent."}
 
 
-# if __name__ == "__main__":
-#     # Example test input
-#     employee_name = "Sudharshan"
-#     status = "Approved"  # or "Rejected"
+if __name__ == "__main__":
+    # Example test input
+    employee_name = "Sudharshan"
+    status = "Approved"  # or "Rejected"
 
-#     result = review_leave_request(employee_name, status)
-#     print(result)
+    result = review_leave_request(employee_name, status)
+    print(result)
 
 def get_leave_requests():
     # client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")

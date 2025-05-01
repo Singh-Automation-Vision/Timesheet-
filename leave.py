@@ -593,23 +593,23 @@ def submit_leave_request(leave_data):
         sick_leave_hours = employee.get("Sick_leave_hours", 0)
         if sick_leave_hours < requested_hours:
             return {"success": False, "message": "Not enough sick leave hours"}
-        else:
-            # Deduct from sick leave hours
-            emp_collection.update_one({"name": leave_data["name"]}, {"$inc": {"Sick_leave_hours": -requested_hours}})
+        # else:
+        #     # Deduct from sick leave hours
+        #     emp_collection.update_one({"name": leave_data["name"]}, {"$inc": {"Sick_leave_hours": -requested_hours}})
     elif leave_data["leaveType"] != "Medical Leave":
         casual_leave_hours = employee.get("Casual_leave_hours", 0)
         if casual_leave_hours < requested_hours:
             return {"success": False, "message": "Not enough casual leave hours"}
-        else:
-            # Deduct from casual leave hours
-            emp_collection.update_one({"name": leave_data["name"]}, {"$inc": {"Casual_leave_hours": -requested_hours}})
+        # else:
+        #     # Deduct from casual leave hours
+        #     emp_collection.update_one({"name": leave_data["name"]}, {"$inc": {"Casual_leave_hours": -requested_hours}})
     else:
         return {"success": False, "message": "Invalid leave type"}
 
     # Insert leave request to DB (pending for approval)
     leave_request = {
         "employee_name": leave_data["name"],
-        "leave_type": leave_data["leaveType"].lower(),
+        "leave_type": leave_data["leaveType"],
         "start_date": leave_data["startDate"],
         "end_date": leave_data["endDate"],
         "reason": leave_data["reason"],
