@@ -643,8 +643,8 @@ def submit_leave_request(leave_data):
 # if __name__ == "__main__":
 #     # Sample leave data for testing (with days instead of hours)
 #     leave_data = {
-#         "name": "Naveen", 
-#         "leaveType": "Vote", 
+#         "name": "Sudharshan", 
+#         "leaveType": "Medical Leave", 
 #         "startDate": "2025-06-15", 
 #         "endDate": "2025-06-15", 
 #         "reason": "Medical",

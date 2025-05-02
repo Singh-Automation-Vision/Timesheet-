@@ -25,6 +25,36 @@ def send_leave_email(recipient_email, employee_name, status, hours, start_date):
         server.send_message(msg)
 
 
+
+def send_email_to_manager_zero_leave(manager_email, employee_name):
+    msg = EmailMessage()
+    msg['Subject'] = f"Leave Balance Exhausted for {employee_name}"
+    msg['From'] = "timesheetsystem2025@gmail.com"
+    msg['To'] = manager_email
+
+    msg.set_content(
+        f"Dear Manager,\n\n"
+        f"This is to inform you that {employee_name} has exhausted their total remaining leave hours.\n"
+        f"Please take note in case further action or approval is needed.\n\n"
+        f"Regards,\nLeave Management System"
+    )
+
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587
+    sender_email = "timesheetsystem2025@gmail.com"
+    sender_password = "mhuv nxdf ciqz igws"  # Gmail App Password
+
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+        print(f"Zero leave notification sent to manager: {manager_email}")
+    except Exception as e:
+        print(f"Failed to send zero leave email to manager: {e}")
+
+
+
 # def review_leave_request(employee_name, status):
 #     client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 #     db = client["Timesheet"]
@@ -108,18 +138,43 @@ def review_leave_request(employee_name, status):
         return {"success": False, "message": "Employee email not found."}
 
     recipient_email = emp_record["email"]
+    manager_email = emp_record.get("manager_email")
 
     # Based on approval or rejection
     if status == "Approved":
-        update_query = {"$inc": {"Remaining_leave_hours": -hours_requested}}
-        
+        update_query = {
+            "$inc": {
+                "Remaining_leave_hours": -hours_requested
+            }
+        }
+
         if leave_type == "medical leave":
             update_query["$inc"]["Sick_leave_hours_used"] = hours_requested
+            update_query["$inc"]["Sick_leave_hours"] = -hours_requested
         else:
             update_query["$inc"]["Casual_leave_hours_used"] = hours_requested
+            update_query["$inc"]["Casual_leave_hours"] = -hours_requested
 
         emp_collection.update_one({"name": employee_name}, update_query)
+
+    # if status == "Approved":
+    #     update_query = {"$inc": {"Remaining_leave_hours": -hours_requested}}
+        
+    #     if leave_type == "medical leave":
+    #         update_query["$inc"]["Sick_leave_hours_used":+ hours_requested]
+    #         update_query = {"$inc": {"Sick_leave_hours": -hours_requested}}
+    #     else:
+    #         update_query["$inc"]["Casual_leave_hours_used": + hours_requested]
+    #         update_query = {"$inc": {"Casual_leave_hours": -hours_requested}}
+
+    #     emp_collection.update_one({"name": employee_name}, update_query)
         destination_collection = db["Approved_request"]
+        updated_emp = emp_collection.find_one({"name": employee_name})
+        if updated_emp and updated_emp.get("Remaining_leave_hours", 0) <= 0:
+            if manager_email:
+                send_email_to_manager_zero_leave(manager_email, employee_name)
+            else:
+                print("Manager email not available for zero leave alert")
 
     elif status == "Rejected":
         destination_collection = db["Rejected_request"]
@@ -140,13 +195,13 @@ def review_leave_request(employee_name, status):
     return {"success": True, "message": f"Leave request for {employee_name} {status.lower()} and email sent."}
 
 
-if __name__ == "__main__":
-    # Example test input
-    employee_name = "Sudharshan"
-    status = "Approved"  # or "Rejected"
+# if __name__ == "__main__":
+#     # Example test input
+#     employee_name = "Sudharshan"
+#     status = "Approved"  # or "Rejected"
 
-    result = review_leave_request(employee_name, status)
-    print(result)
+#     result = review_leave_request(employee_name, status)
+#     print(result)
 
 def get_leave_requests():
     # client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")

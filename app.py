@@ -431,6 +431,19 @@ def update_leave_request_status(employee_name):
         return jsonify({
             "error": result.get("message")
         }), 400
+    
+@application.route("/api/leave-balances", methods=["GET"])
+def get_all_leave_balances():
+    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    db = client["Timesheet"]
+    emp_collection = db["Employee_leavedetails"]
+
+    employees = emp_collection.find({}, {"_id": 0, "name": 1, "Sick_leave_hours_used": 1, "Casual_leave_hours_used": 1, "Remaining_leave_hours": 1})
+
+    leave_balances = list(employees)
+
+    return jsonify(leave_balances)
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
     application.run(host="0.0.0.0", port=port)
