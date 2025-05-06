@@ -97,7 +97,7 @@ def accrue_sick_leave_for_employee(employee_name):
     employee_pm_collection = db["Employee_PM"]
     employee_leave_collection = db["Employee_leavedetails"]
 
-    today = datetime.datetime.now().date()
+    # today = datetime.datetime.date()
 
     employee = emp_data_collection.find_one({"name": employee_name})
     if not employee:
