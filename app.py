@@ -85,11 +85,11 @@ def add_PM_timesheet():
     data = request.json
     add_PM_data(data)
 
-    employee_name = data.get("employee_name")
-    if employee_name:
-        accrue_sick_leave_for_employee(employee_name)
+    # employee_name = data.get("employee_name")
+    # if employee_name:
+    #     accrue_sick_leave_for_employee(employee_name)
 
-    return jsonify({"message": "Timesheet added and sick leave accrued successfully"})
+    return jsonify({"message": "Timesheet added and sick leave accrued successfully"})
 
 # Add a new user (admin functionality)
 @application.route("/api/users", methods=["POST"])
