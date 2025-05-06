@@ -414,14 +414,30 @@ def leave_requests_api():
     return jsonify(leave_requests)
 
 
+# @application.route('/api/leave-request/by-name/<employee_name>', methods=['GET'])
+# def fetch_leave_by_name(employee_name):
+#     leave_request = get_leave_request_by_name(employee_name)
+    
+#     if isinstance(leave_request, tuple):  # (data, 404)
+#         return jsonify(leave_request[0]), leave_request[1]
+    
+#     return jsonify(leave_request)
 @application.route('/api/leave-request/by-name/<employee_name>', methods=['GET'])
 def fetch_leave_by_name(employee_name):
-    leave_request = get_leave_request_by_name(employee_name)
-    
-    if isinstance(leave_request, tuple):  # (data, 404)
+    submitted_at = request.args.get("submittedAt")
+    leave_type = request.args.get("leaveType")
+
+    if not submitted_at or not leave_type:
+        return jsonify({"error": "submittedAt and leaveType are required query parameters"}), 400
+
+    # Adjust this function according to your DB logic
+    leave_request = get_leave_request_by_name(employee_name, submitted_at, leave_type)
+
+    if isinstance(leave_request, tuple):
         return jsonify(leave_request[0]), leave_request[1]
-    
+
     return jsonify(leave_request)
+
 
 @application.route('/api/leave-request/by-name/<employee_name>/status', methods=['PUT'])
 def update_leave_request_status(employee_name):
