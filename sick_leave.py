@@ -12,14 +12,14 @@ def accrue_sick_leave_for_employee(employee_name):
 
     employee = emp_data_collection.find_one({"name": employee_name})
     if not employee:
-        print(f"Employee {employee_name} not found in employee_data.")
+        return (f"Employee {employee_name} not found in employee_data.")
         return
 
     print(f"\nProcessing employee: {employee_name}")
 
     leave_data = employee_leave_collection.find_one({"name": employee_name})
     if not leave_data:
-        print(f"No leave data found for {employee_name}. Skipping.")
+        return(f"No leave data found for {employee_name}. Skipping.")
         return
 
     last_accrued_date_str = leave_data.get("last_accrued_date")

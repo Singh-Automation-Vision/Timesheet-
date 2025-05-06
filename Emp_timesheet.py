@@ -38,6 +38,7 @@ def get_manager_details(emp_name):
 
 # Add or update AM (morning) timesheet data for an employee
 def add_AM_data(data):
+    # client = pymongo.MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     collection = db["Employee_AM"]
@@ -90,7 +91,8 @@ def add_AM_data(data):
 
 # Add PM timesheet to the database
 def add_PM_data(data):
-    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    # client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     db = client["Timesheet"]
     collection_pm = db["Employee_PM"]
     employee_name = data.get("employee_name")
