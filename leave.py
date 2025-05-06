@@ -41,10 +41,11 @@ def send_email_to_manager(manager_email, employee_name, start_date, end_date, re
         print(f"Failed to send email: {e}")
 
 def submit_leave_request(leave_data):
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
-    emp_data_collection = db["employee_data"]
+    emp_data_collection = db["Employee_data"]
     leave_collection = db["Leave_Requests"]
 
     required_fields = ["name", "leaveType", "startDate", "endDate", "reason", "submissionDate"]

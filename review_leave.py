@@ -117,7 +117,8 @@ def send_email_to_manager_zero_leave(manager_email, employee_name):
 #     return {"success": True, "message": f"Leave request for {employee_name} {status.lower()} and email sent."}
 
 def review_leave_request(employee_name, status):
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
     leave_collection = db["Leave_Requests"]
@@ -204,16 +205,16 @@ def review_leave_request(employee_name, status):
 #     print(result)
 
 def get_leave_requests():
-    # client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    # db = client["Timesheet"]
-    # emp_collection = db["Employee_leavedetails"]
-    # emp_data_collection = db["Employee_data"]
-    # leave_collection = db["Leave_Requests"]
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
+    emp_data_collection = db["Employee_data"]
     leave_collection = db["Leave_Requests"]
-    emp_data_collection = db["employee_data"]
+    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    # db = client["Timesheet"]
+    # emp_collection = db["Employee_leavedetails"]
+    # leave_collection = db["Leave_Requests"]
+    # emp_data_collection = db["employee_data"]
 
     leave_requests = list(leave_collection.find())
 
@@ -236,16 +237,16 @@ def get_leave_requests():
 
 
 def get_leave_request_by_name(employee_name):
-    # client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-    # db = client["Timesheet"]
-    # emp_collection = db["Employee_leavedetails"]
-    # emp_data_collection = db["Employee_data"]
-    # leave_collection = db["Leave_Requests"]
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
+    emp_data_collection = db["Employee_data"]
     leave_collection = db["Leave_Requests"]
-    emp_data_collection = db["employee_data"]
+    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    # db = client["Timesheet"]
+    # emp_collection = db["Employee_leavedetails"]
+    # leave_collection = db["Leave_Requests"]
+    # emp_data_collection = db["employee_data"]
 
 
     leave = leave_collection.find_one({'employee_name': employee_name})

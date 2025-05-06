@@ -89,9 +89,10 @@ import pymongo
 import datetime
 
 def accrue_sick_leave_for_employee(employee_name):
-    client = pymongo.MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+#     client = pymongo.MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = pymongo.MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
-    emp_data_collection = db["employee_data"]
+    emp_data_collection = db["Employee_data"]
     employee_pm_collection = db["Employee_PM"]
     employee_leave_collection = db["Employee_leavedetails"]
 

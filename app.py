@@ -358,7 +358,8 @@ def leave_request_api():
   
 @application.route("/api/leave-request/available/<string:name>", methods=["GET"])
 def get_leave_status(name):
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
 
@@ -448,7 +449,8 @@ def update_leave_request_status(employee_name):
     
 @application.route("/api/leave-balances", methods=["GET"])
 def get_all_leave_balances():
-    client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    # client = MongoClient("mongodb+srv://prashitar:Vision123@cluster0.v7ckx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     emp_collection = db["Employee_leavedetails"]
 
