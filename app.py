@@ -12,7 +12,7 @@ from review_leave import *
 from datetime import datetime
 from flask_apscheduler import APScheduler
 # from scik_leave import accrue_sick_leave_for_all_employees
-# from sick_leave import accrue_sick_leave_for_employee
+from sick_leave import accrue_sick_leave_for_employee
 import os
 
 # Initialize Flask app
@@ -85,9 +85,9 @@ def add_PM_timesheet():
     data = request.json
     add_PM_data(data)
 
-    # employee_name = data.get("employee_name")
-    # if employee_name:
-    #     accrue_sick_leave_for_employee(employee_name)
+    employee_name = data.get("employee_name")
+    if employee_name:
+        accrue_sick_leave_for_employee(employee_name)
 
     return jsonify({"message": "Timesheet added and sick leave accrued successfully"})
 

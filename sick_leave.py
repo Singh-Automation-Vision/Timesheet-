@@ -85,8 +85,6 @@
 #         print(f"Updated {employee_name}: {update_result.modified_count} document(s)")
 
 
-
-
 import pymongo
 import datetime
 
@@ -97,7 +95,7 @@ def accrue_sick_leave_for_employee(employee_name):
     employee_pm_collection = db["Employee_PM"]
     employee_leave_collection = db["Employee_leavedetails"]
 
-    # today = datetime.datetime.date()
+    today = datetime.datetime.now().date()
 
     employee = emp_data_collection.find_one({"name": employee_name})
     if not employee:
@@ -167,3 +165,4 @@ def accrue_sick_leave_for_employee(employee_name):
         f"{actual_earned_hours} sick leave hours earned. "
         f"Updated {update_result.modified_count} document(s)."
     )
+
