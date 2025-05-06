@@ -13,3 +13,4 @@ Werkzeug
 pytz
 python-dateutil
 pydantic
+Flask-APScheduler

@@ -10,6 +10,9 @@ from leave import *
 from review_leave import *
 #from pyngrok import ngrok
 from datetime import datetime
+from flask_apscheduler import APScheduler
+# from scik_leave import accrue_sick_leave_for_all_employees
+from sick_leave import accrue_sick_leave_for_employee
 import os
 
 # Initialize Flask app
@@ -70,12 +73,23 @@ def add_AM_timesheet():
     return jsonify({"message": "Timesheet added successfully"})
 
 # Route to submit PM timesheet
+# @application.route("/api/PM", methods=["POST"])
+# def add_PM_timesheet():
+#     data = request.json
+#     #print(data)
+#     add_PM_data(data)
+#     return jsonify({"message": "Timesheet added successfully"})
+
 @application.route("/api/PM", methods=["POST"])
 def add_PM_timesheet():
     data = request.json
-    #print(data)
     add_PM_data(data)
-    return jsonify({"message": "Timesheet added successfully"})
+
+    employee_name = data.get("employee_name")
+    if employee_name:
+        accrue_sick_leave_for_employee(employee_name)
+
+    return jsonify({"message": "Timesheet added and sick leave accrued successfully"})
 
 # Add a new user (admin functionality)
 @application.route("/api/users", methods=["POST"])
@@ -443,6 +457,9 @@ def get_all_leave_balances():
     leave_balances = list(employees)
 
     return jsonify(leave_balances)
+
+
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))  
