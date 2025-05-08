@@ -260,3 +260,11 @@ def get_latest_am_date(employee_name):
 # get_latest_employee_am_data(email)
 # print(get_latest_employee_am_data(email))
 #print(get_latest_employee_am_data("Sudharshan","04-05-2025"))
+
+
+
+
+
+
+
+# Line number 129 there is an error its creating an error because in database it is only giving the default country has India - code done by prashita
