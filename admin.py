@@ -19,10 +19,13 @@ def delete_emp(emp_name):
     collection_credential = db["Employee_credentials"]
     collection_AM =db["Employee_AM"]
     collection_PM =db["Employee_PM"]
+    collection_leave = db["Employee_leavedetails"]
     collection.delete_one({"name": emp_name})
+    collection_leave.delete_one({"name": emp_name})
     collection_credential.delete_one({"Username": emp_name})
     collection_AM.delete_many({"employee_name": emp_name})
     collection_PM.delete_many({"employee_name": emp_name})
+    
 
 #Get employee data for a given date
 #def get_emp_data(emp_name,date):
@@ -55,9 +58,22 @@ def add_new_user(user_input):
     db = client["Timesheet"]
     collection_emp = db["Employee_data"]    
     collection_credential = db["Employee_credentials"]
+    collection_leave = db["Employee_leavedetails"] #changes by naveen
     user_credential = { "Username": user_input["name"], "Password": user_input["password"] }
     collection_emp.insert_one(user_input)
     collection_credential.insert_one(user_credential)
+    leave_details = {
+        "name": user_input["name"],
+        "Total_leave_hours": 40,
+        "Sick_leave_hours": 0,
+        "Casual_leave_hours": 40,
+        "Remaining_leave_hours": 40,
+        "Casual_leave_hours_used": 0,
+        "Sick_leave_hours_used": 0,
+        "Earned_hours": 0,
+        "last_accrued_date": "2025-01-01"  # or datetime.today().strftime("%Y-%m-%d")
+    }
+    collection_leave.insert_one(leave_details)
 
 # Retrieve employee details to display in frontend
 def show_user():
