@@ -4,28 +4,68 @@ from pymongo import MongoClient
 from datetime import datetime
 
 
+# def send_email_to_manager(manager_email, employee_name, start_date, end_date, reason, leave_type, hours):
+#     sender_email = "timesheetsystem2025@gmail.com"
+#     sender_password = "mhuv nxdf ciqz igws"  # Use your actual password or app password here
+
+#     subject = f"New Leave Request from {employee_name}"
+#     body = f"""
+#     Good day,
+
+#     A new leave request has been submitted:
+
+#     Employee: {employee_name}
+#     From: {start_date}
+#     To: {end_date}
+#     Reason: {reason}
+#     Leave Type: {leave_type}
+#     Hours Requested: {hours} hours
+
+#     Please log in to the system to review and take action.
+
+#     Regards,
+#     Timesheet System
+#     """
+
+#     msg = MIMEText(body)
+#     msg["Subject"] = subject
+#     msg["From"] = sender_email
+#     msg["To"] = manager_email
+
+#     try:
+#         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+#             server.login(sender_email, sender_password)
+#             server.sendmail(sender_email, manager_email, msg.as_string())
+#         print("Email sent successfully to manager.")
+#     except Exception as e:
+#         print(f"Failed to send email: {e}")
+
+import smtplib
+from email.mime.text import MIMEText
+
 def send_email_to_manager(manager_email, employee_name, start_date, end_date, reason, leave_type, hours):
     sender_email = "timesheetsystem2025@gmail.com"
-    sender_password = "mhuv nxdf ciqz igws"  # Use your actual password or app password here
+    sender_password = "mhuv nxdf ciqz igws"  # Gmail App Password
 
     subject = f"New Leave Request from {employee_name}"
-    body = f"""
-    Good day,
+    body = f"""\
+Good day,
 
-    A new leave request has been submitted:
+A new leave request has been submitted:
 
-    Employee: {employee_name}
-    From: {start_date}
-    To: {end_date}
-    Reason: {reason}
-    Leave Type: {leave_type}
-    Hours Requested: {hours} hours
+Employee: {employee_name}
+From: {start_date}
+To: {end_date}
+Reason: {reason}
+Leave Type: {leave_type}
+Hours Requested: {hours} hours
 
-    Please log in to the system to review and take action.
+Please login as an admin to approve or reject the leave request:
+https://satimesheet.netlify.app/login
 
-    Regards,
-    Timesheet System
-    """
+Regards,
+Timesheet System
+"""
 
     msg = MIMEText(body)
     msg["Subject"] = subject
@@ -39,6 +79,7 @@ def send_email_to_manager(manager_email, employee_name, start_date, end_date, re
         print("Email sent successfully to manager.")
     except Exception as e:
         print(f"Failed to send email: {e}")
+
 
 def submit_leave_request(leave_data):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
