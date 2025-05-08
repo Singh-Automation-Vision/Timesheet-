@@ -270,7 +270,7 @@ def review_leave_request(employee_name, status):
         db = client["Timesheet"]
         emp_collection = db["Employee_leavedetails"]
         leave_collection = db["Leave_Requests"]
-        emp_data_collection = db["employee_data"]
+        emp_data_collection = db["Employee_data"]
 
         leave_request = leave_collection.find_one({"employee_name": employee_name, "status": "Pending"})
         if not leave_request:
