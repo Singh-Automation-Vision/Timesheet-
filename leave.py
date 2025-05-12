@@ -59,6 +59,8 @@ To: {end_date}
 Reason: {reason}
 Leave Type: {leave_type}
 Hours Requested: {hours} hours
+please login as : f"Username: admin\n"
+f"Password: admin\n\n"
 
 Please login as an admin to approve or reject the leave request:
 https://satimesheet.netlify.app/login
