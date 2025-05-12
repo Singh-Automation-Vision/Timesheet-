@@ -208,6 +208,31 @@ logging.basicConfig(
 )
 
 # Function used to send mail to the user regarding the status of the request 
+# def send_leave_email(recipient_email, employee_name, status, hours, start_date):
+#     try:
+#         msg = EmailMessage()
+#         msg['Subject'] = f"Your Leave Request has been {status}"
+#         msg['From'] = "timesheetsystem2025@gmail.com"
+#         msg['To'] = recipient_email
+
+#         msg.set_content(
+#             f"Hi {employee_name},\n\n"
+#             f"Your leave request starting from {start_date} for {hours} hour(s) has been {status.lower()}.\n\n"
+#             f"Regards,\nAdmin"
+#         )
+
+#         smtp_server = "smtp.gmail.com"
+#         smtp_port = 587
+#         sender_email = "timesheetsystem2025@gmail.com"
+#         sender_password = "mhuv nxdf ciqz igws"  # Gmail App Password
+
+#         with smtplib.SMTP(smtp_server, smtp_port) as server:
+#             server.starttls()
+#             server.login(sender_email, sender_password)
+#             server.send_message(msg)
+#         logging.info(f"Leave status email sent to {recipient_email}")
+#     except Exception as e:
+#         logging.error(f"Failed to send leave email: {e}")
 def send_leave_email(recipient_email, employee_name, status, hours, start_date):
     try:
         msg = EmailMessage()
@@ -218,6 +243,9 @@ def send_leave_email(recipient_email, employee_name, status, hours, start_date):
         msg.set_content(
             f"Hi {employee_name},\n\n"
             f"Your leave request starting from {start_date} for {hours} hour(s) has been {status.lower()}.\n\n"
+            f"Please login with:\n"
+            f"Username: admin\n"
+            f"Password: admin\n\n"
             f"Regards,\nAdmin"
         )
 
@@ -233,6 +261,7 @@ def send_leave_email(recipient_email, employee_name, status, hours, start_date):
         logging.info(f"Leave status email sent to {recipient_email}")
     except Exception as e:
         logging.error(f"Failed to send leave email: {e}")
+
 
 
 #Function used to send mail to the manager regarding the employee leaves became zero , it used for the send notification to manager
