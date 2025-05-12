@@ -49,24 +49,24 @@ def send_email_to_manager(manager_email, employee_name, start_date, end_date, re
 
     subject = f"New Leave Request from {employee_name}"
     body = f"""\
-Good day,
+Good Day,
 
-A new leave request has been submitted:
+A new leave request has been submitted and requires your attention:
 
-Employee: {employee_name}
-From: {start_date}
-To: {end_date}
-Reason: {reason}
-Leave Type: {leave_type}
-Hours Requested: {hours} hours
-please login as : f"Username: admin\n"
-f"Password: admin\n\n"
+Employee Name : {employee_name}  
+Leave Period   : {start_date} to {end_date}  
+Leave Type     : {leave_type}  
+Reason         : {reason}  
+Hours Requested: {hours} hours  
 
-Please login as an admin to approve or reject the leave request:
-https://satimesheet.netlify.app/login
+To review and take action on this request, please log in to the admin portal:
 
-Regards,
-Timesheet System
+Login URL: https://satimesheet.netlify.app/login  
+Username : admin  
+Password : admin  
+
+Thank you,  
+Timesheet Management System
 """
 
     msg = MIMEText(body)
