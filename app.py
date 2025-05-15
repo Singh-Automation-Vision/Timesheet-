@@ -106,6 +106,7 @@ def delete_user(email):
     return jsonify({"message": "Employee deleted successfully"})
 
 # Update performance matrices
+#admin side
 @application.route("/api/matrices", methods=["POST"])
 def matrices():
     data = request.json
