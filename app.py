@@ -12,6 +12,7 @@ from review_leave import *
 from datetime import datetime
 from flask_apscheduler import APScheduler
 # from scik_leave import accrue_sick_leave_for_all_employees
+from safety import save_safety_matrix, send_safety_email
 from sick_leave import accrue_sick_leave_for_employee
 import os
 
@@ -70,7 +71,16 @@ def login():
 def add_AM_timesheet():
     data = request.json
     add_AM_data(data)
-    return jsonify({"message": "Timesheet added successfully"})
+    employee_name = data.get("employee_name")
+    employee_email = data.get("employee_email")  
+
+    if employee_email and employee_name:
+        send_safety_email(employee_email, employee_name)
+
+    return jsonify({"message": "Timesheet added successfully and email sent "})
+    
+    
+
 
 # Route to submit PM timesheet
 # @application.route("/api/PM", methods=["POST"])
@@ -460,6 +470,16 @@ def get_all_leave_balances():
     leave_balances = list(employees)
 
     return jsonify(leave_balances)
+
+@application.route("/api/safety", methods=["POST"])
+def safety():
+    data = request.json
+    employee_name = data.get("employee_name")
+    safety_ratings = data.get("safety_ratings")
+
+    save_safety_matrix(employee_name, safety_ratings)
+    return jsonify({"message": "Safety matrix updated successfully"})
+
 
 
 
