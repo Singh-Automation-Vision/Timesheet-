@@ -72,7 +72,7 @@ def add_AM_timesheet():
     data = request.json
     add_AM_data(data)
     employee_name = data.get("employee_name")
-    employee_email = data.get("employee_email")  
+    employee_email = data.get("email")  
 
     if employee_email and employee_name:
         send_safety_email(employee_email, employee_name)
