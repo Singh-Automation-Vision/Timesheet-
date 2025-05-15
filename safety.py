@@ -39,10 +39,7 @@ def send_safety_email(employee_email, employee_name):
     except Exception as e:
         logging.error(f"Failed to send safety email: {e}")
 
-employee_name = "naveen"
-employee_email = "naveen@singhautomation.com"  # Replace this with your test email address
 
-send_safety_email(employee_email, employee_name)
 
 
 def send_alert_safety_email(user_input_AM, flag_count, manager, mail):
