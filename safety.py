@@ -4,7 +4,6 @@ from email.message import EmailMessage
 from email.mime.text import MIMEText
 import logging
 from pymongo import MongoClient
-
 def send_safety_email(employee_email, employee_name):
     try:
         msg = EmailMessage()
@@ -14,7 +13,6 @@ def send_safety_email(employee_email, employee_name):
 
         msg.set_content(
             f"Hi {employee_name},\n\n"
-            # f"Thank you for filling out your AM sheet today.\n"
             f"Please remember to follow all safety protocols during your workday.\n"
             f"• Wear appropriate PPE.\n"
             f"• Follow operational guidelines.\n"
@@ -27,17 +25,54 @@ def send_safety_email(employee_email, employee_name):
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
         sender_email = "timesheetsystem2025@gmail.com"
-        sender_password = "mhuv nxdf ciqz igws" # Replace with your Gmail App Password
+        sender_password = "mhuv nxdf ciqz igws"  # Gmail App Password
 
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
             server.login(sender_email, sender_password)
             server.send_message(msg)
 
-        logging.info(f"Safety email sent to {employee_email}")
+        logging.info(f"✅ Safety email sent to {employee_email}")
+        print(f"✅ Email sent to {employee_email}")  # ADD this
 
     except Exception as e:
-        logging.error(f"Failed to send safety email: {e}")
+        logging.error(f"❌ Failed to send safety email: {e}")
+        print(f"❌ Error sending email: {e}")  # ADD this
+
+
+# def send_safety_email(employee_email, employee_name):
+#     try:
+#         msg = EmailMessage()
+#         msg['Subject'] = "Daily Safety Reminder – Thank You"
+#         msg['From'] = "timesheetsystem2025@gmail.com"
+#         msg['To'] = employee_email
+
+#         msg.set_content(
+#             f"Hi {employee_name},\n\n"
+#             # f"Thank you for filling out your AM sheet today.\n"
+#             f"Please remember to follow all safety protocols during your workday.\n"
+#             f"• Wear appropriate PPE.\n"
+#             f"• Follow operational guidelines.\n"
+#             f"• Report any hazards immediately.\n\n"
+#             f"Stay safe!\n\n"
+#             f"Regards,\n"
+#             f"Safety & Timesheet Management System"
+#         )
+
+#         smtp_server = "smtp.gmail.com"
+#         smtp_port = 587
+#         sender_email = "timesheetsystem2025@gmail.com"
+#         sender_password = "mhuv nxdf ciqz igws" # Replace with your Gmail App Password
+
+#         with smtplib.SMTP(smtp_server, smtp_port) as server:
+#             server.starttls()
+#             server.login(sender_email, sender_password)
+#             server.send_message(msg)
+
+#         logging.info(f"Safety email sent to {employee_email}")
+
+#     except Exception as e:
+#         logging.error(f"Failed to send safety email: {e}")
 
 
 
@@ -109,15 +144,36 @@ def review_safety(user_input_AM,manager,mail):
 
 
 
+# def save_safety_matrix(employee_name, safety_ratings):
+#     """Update safety ratings in the latest AM sheet entry."""
+#     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+#     db = client["Timesheet"]
+#     am_collection = db["Employee_AM"]
+
+#     recent_date = get_latest_date_for_safety(employee_name)
+#     if not recent_date:
+#         return(f"No recent AM sheet found for {employee_name}. Cannot save safety matrix.")
+#         return
+
+#     result = am_collection.update_one(
+#         {"employee_name": employee_name, "date": recent_date},
+#         {"$set": {"safety_matrix": safety_ratings}}
+#     )
+
+#     if result.modified_count:
+#         return(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
+#     else:
+#         return(f"⚠️ No updates made. Check if the entry exists or if ratings are identical.")
+
 def save_safety_matrix(employee_name, safety_ratings):
-    """Update safety ratings in the latest AM sheet entry."""
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     am_collection = db["Employee_AM"]
+    employee_collection = db["Employee_data"]
 
     recent_date = get_latest_date_for_safety(employee_name)
     if not recent_date:
-        return(f"No recent AM sheet found for {employee_name}. Cannot save safety matrix.")
+        logging.warning(f"No recent AM sheet found for {employee_name}. Cannot save safety matrix.")
         return
 
     result = am_collection.update_one(
@@ -125,11 +181,31 @@ def save_safety_matrix(employee_name, safety_ratings):
         {"$set": {"safety_matrix": safety_ratings}}
     )
 
-    if result.modified_count:
-        return(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
-    else:
-        return(f"⚠️ No updates made. Check if the entry exists or if ratings are identical.")
+    # Fetch employee email and manager info
+    employee = employee_collection.find_one({"name": employee_name})
+    if employee:
+        employee_email = employee.get("email")
+        manager_name = employee.get("manager_name")
+        manager_email = employee.get("manager_email")
 
+        # Rebuild structure needed for review_safety()
+        user_input_AM = {
+            "employee_name": employee_name,
+            "safety_ratings": safety_ratings
+        }
+
+        # Send thank you email
+        if employee_email:
+            send_safety_email(employee_email, employee_name)
+
+        # Send alert if issues
+        if manager_email and manager_name:
+            review_safety(user_input_AM, manager_name, manager_email)
+
+    if result.modified_count:
+        logging.info(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
+    else:
+        logging.warning(f"⚠️ No updates made. Entry may already be up-to-date.")
 
 
 

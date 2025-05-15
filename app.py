@@ -67,19 +67,40 @@ def login():
 
 
 # Route to submit AM timesheet
+
+###################################################################################################################
+# @application.route("/api/AM", methods=["POST"])
+# def add_AM_timesheet():
+#     data = request.json
+#     add_AM_data(data)
+#     employee_name = data.get("employee_name")
+#     employee_email = data.get("email")  
+
+#     if employee_email and employee_name:
+#         send_safety_email(employee_email, employee_name)
+
+#     return jsonify({"message": "Timesheet added successfully and email sent "})
+    
+ ########################################################################################################################
+ # 
+ # 
+ # 
 @application.route("/api/AM", methods=["POST"])
 def add_AM_timesheet():
     data = request.json
+    print(f"🔍 Incoming AM data: {data}")  # ADD this
+
     add_AM_data(data)
+
     employee_name = data.get("employee_name")
     employee_email = data.get("email")  
 
     if employee_email and employee_name:
+        print(f"📧 Sending email to {employee_email}")  # ADD this
         send_safety_email(employee_email, employee_name)
 
     return jsonify({"message": "Timesheet added successfully and email sent "})
-    
-    
+   
 
 
 # Route to submit PM timesheet
@@ -471,14 +492,30 @@ def get_all_leave_balances():
 
     return jsonify(leave_balances)
 
+# @application.route("/api/safety", methods=["POST"])
+# def safety():
+#     data = request.json
+#     employee_name = data.get("employee_name")
+#     safety_ratings = data.get("safety_ratings")
+
+#     save_safety_matrix(employee_name, safety_ratings)
+#     return jsonify({"message": "Safety matrix updated successfully"})
 @application.route("/api/safety", methods=["POST"])
 def safety():
-    data = request.json
-    employee_name = data.get("employee_name")
-    safety_ratings = data.get("safety_ratings")
+    try:
+        data = request.json
+        employee_name = data.get("employee_name")
+        safety_ratings = data.get("safety_ratings")
 
-    save_safety_matrix(employee_name, safety_ratings)
-    return jsonify({"message": "Safety matrix updated successfully"})
+        if not employee_name or not safety_ratings:
+            return jsonify({"error": "Missing employee_name or safety_ratings"}), 400
+
+        save_safety_matrix(employee_name, safety_ratings)
+        return jsonify({"message": "Safety matrix updated successfully"})
+    except Exception as e:
+        logging.error(f"Error in /api/safety route: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 
 
 
