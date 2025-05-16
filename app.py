@@ -15,9 +15,7 @@ from flask_apscheduler import APScheduler
 from safety import save_safety_matrix, send_safety_email
 from sick_leave import accrue_sick_leave_for_employee
 import os
-client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
-db = client["Timesheet"]
-employee_data_collection = db["Employee_data"]
+
 # Initialize Flask app
 application = Flask(__name__)
 
@@ -87,46 +85,23 @@ def login():
  # 
  # 
  # 
-# @application.route("/api/AM", methods=["POST"])
-# def add_AM_timesheet():
-#     data = request.json
-#     print(f"🔍 Incoming AM data: {data}")  # ADD this
-
-#     add_AM_data(data)
-
-#     employee_name = data.get("employee_name")
-#     employee_email = data.get("email")  
-
-#     if employee_email and employee_name:
-#         print(f"Sending email to {employee_email}")  # ADD this
-#         send_safety_email(employee_email, employee_name)
-
-#     return jsonify({"message": "Timesheet added successfully and email sent "})
-###################################
+@application.route("/api/AM", methods=["POST"])
 def add_AM_timesheet():
     data = request.json
-    print(f"🔍 Incoming AM data: {data}")
+    print(f"🔍 Incoming AM data: {data}")  # ADD this
 
     add_AM_data(data)
 
     employee_name = data.get("employee_name")
-    employee_email = data.get("email")
+    employee_email = data.get("email")  
 
-    # If email is not present, look it up using employee_name
-    if not employee_email and employee_name:
-        employee_record = employee_data_collection.find_one({"name": employee_name})
-        if employee_record:
-            employee_email = employee_record.get("email")
-            print(f"📬 Retrieved email from DB: {employee_email}")
-        else:
-            print(f"⚠️ No record found for employee: {employee_name}")
-
-    # Send email if both name and email are available
     if employee_email and employee_name:
-        print(f"📨 Sending email to {employee_email}")
+        print(f"Sending email to {employee_email}")  # ADD this
         send_safety_email(employee_email, employee_name)
 
-    return jsonify({"message": "Timesheet added successfully and email sent (if email was found)"})   
+    return jsonify({"message": "Timesheet added successfully and email sent "})
+###################################
+   
 
 
 # Route to submit PM timesheet
