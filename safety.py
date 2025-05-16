@@ -165,7 +165,7 @@ def review_safety(user_input_AM,manager,mail):
 #     else:
 #         return(f"⚠️ No updates made. Check if the entry exists or if ratings are identical.")
 
-def save_safety_matrix(employee_name, safety_ratings):
+def save_safety_matrix(employee_name,date,safety_ratings):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     am_collection = db["Employee_AM"]
