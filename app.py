@@ -520,7 +520,10 @@ def safety():
 
 
 
-
+@application.route("/api/safety", methods=["POST"])
+def get_safety_between_dates(matrixUsername,matrixStartDate,matrixEndDate):
+    data = get_safety_between_dates(matrixUsername,matrixStartDate,matrixEndDate)
+    return jsonify({"message": "Success", "data": data})
 
 
 if __name__ == "__main__":

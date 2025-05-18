@@ -229,3 +229,5 @@ def get_latest_date_for_safety(employee_name):
         except Exception as e:
             return("Error parsing AM date:", e)
     return None
+
+
