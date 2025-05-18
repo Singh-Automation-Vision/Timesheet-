@@ -4,7 +4,7 @@ from Emp_timesheet import add_PM_data, add_AM_data, employee_login,performance_m
 #from Emp_info import add_emp_info
 from flask_cors import CORS
 import logging
-from admin import add_new_user,delete_emp,show_user, get_timesheet_between_dates, get_am_timesheet_between_dates,get_pm_timesheet_between_dates,get_performance_between_dates, user_details,update_user,resource_management
+from admin import add_new_user,delete_emp, get_safety_between_dates,show_user, get_timesheet_between_dates, get_am_timesheet_between_dates,get_pm_timesheet_between_dates,get_performance_between_dates, user_details,update_user,resource_management
 from Project import retrieve_project,add_project, get_project_list, get_project_hours_pm, get_project_detail, delete_project, update_project,project_details_between_dates
 from leave import *
 from review_leave import *
@@ -520,10 +520,18 @@ def safety():
 
 
 
-@application.route("/api/safety", methods=["POST"])
-def get_safety_between_dates(matrixUsername,matrixStartDate,matrixEndDate):
-    data = get_safety_between_dates(matrixUsername,matrixStartDate,matrixEndDate)
+@application.route("/api/safety", methods=["GET"])
+def get_safety_between_dates_api():
+    matrixUsername = request.args.get("employee_name")
+    matrixStartDate = request.args.get("start_date")
+    matrixEndDate = request.args.get("end_date")
+
+    if not matrixUsername or not matrixStartDate or not matrixEndDate:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    data = get_safety_between_dates(matrixUsername, matrixStartDate, matrixEndDate)
     return jsonify({"message": "Success", "data": data})
+
 
 
 if __name__ == "__main__":
