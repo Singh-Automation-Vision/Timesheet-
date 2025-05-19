@@ -246,6 +246,8 @@ from email.mime.text import MIMEText
 import logging
 from pymongo import MongoClient
 
+from Emp_timesheet import get_manager_details
+
 
 def send_safety_matrix_prompt(employee_email, employee_name):
     try:
@@ -335,18 +337,41 @@ def review_safety(user_input_AM, manager, mail):
             user_input_AM["safety_matrix"]["Have you reviewed and acknowledged today's safety briefing or posted instructions?"],
         ]
 
-        # Normalize answers
-        normalized = [str(ans).strip().lower() for ans in performance_params]
-        red_count = normalized.count("red")
+        # Normalize input to lowercase and strip whitespace
+        red_count = sum(1 for item in performance_params if item.strip().lower() == "red")
 
         if red_count >= 1:
-            print(f"⚠️ Found {red_count} RED flag(s). Sending alert to {manager}")
             send_alert_safety_email(user_input_AM, red_count, manager, mail)
         else:
-            print(f"✅ No safety issues for {user_input_AM['employee_name']}")
-
+            print("✅ No safety issues flagged.")
+ 
     except KeyError as e:
-        print(f"❌ KeyError in review_safety: Missing field {e}")
+        return(f"KeyError: Missing field {e}")
+
+# def review_safety(user_input_AM, manager, mail):    
+    # try:
+    #     performance_params = [
+    #         user_input_AM["safety_matrix"]["Are you wearing all required Personal Protective Equipment (PPE) for your task today?"],
+    #         user_input_AM["safety_matrix"]["Have you inspected your tools, machines, or equipment for any visible damage or malfunction?"],
+    #         user_input_AM["safety_matrix"]["Is your work area clean, organized, and free from slip/trip hazards?"],
+    #         user_input_AM["safety_matrix"]["Are all emergency stop buttons and safety interlocks functional and accessible?"],
+    #         user_input_AM["safety_matrix"]["Are all wires, cables, and hoses properly managed to avoid entanglement or tripping?"],
+    #         user_input_AM["safety_matrix"]["Have you seen or experienced anything unsafe today that should be reported?"],
+    #         user_input_AM["safety_matrix"]["Have you reviewed and acknowledged today's safety briefing or posted instructions?"],
+    #     ]
+
+    #     # Normalize answers
+    #     normalized = [str(ans).strip().lower() for ans in performance_params]
+    #     red_count = normalized.count("Red")
+
+    #     if red_count >= 1:
+    #         print(f"⚠️ Found {red_count} RED flag(s). Sending alert to {manager}")
+    #         send_alert_safety_email(user_input_AM, red_count, manager, mail)
+    #     else:
+    #         print(f"✅ No safety issues for {user_input_AM['employee_name']}")
+
+    # except KeyError as e:
+    #     print(f"❌ KeyError in review_safety: Missing field {e}")
 
 
 def get_latest_date_for_safety(employee_name):
@@ -375,7 +400,7 @@ def get_latest_date_for_safety(employee_name):
 def save_safety_matrix(employee_name, date, safety_ratings):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
-    am_collection = db["Employee_AM"]
+    collection = db["Employee_AM"]
     employee_collection = db["Employee_data"]
 
     recent_date = get_latest_date_for_safety(employee_name)
@@ -383,35 +408,70 @@ def save_safety_matrix(employee_name, date, safety_ratings):
         logging.warning(f"No recent AM sheet found for {employee_name}. Cannot save safety matrix.")
         return
 
-    result = am_collection.update_one(
+    result = collection.update_one(
         {"employee_name": employee_name, "date": recent_date},
         {"$set": {"safety_matrix": safety_ratings}}
     )
+    emp_name = employee_name
+    manager, mail = get_manager_details(emp_name)
+    user_input = collection.find_one({"employee_name": employee_name, "date": recent_date})
 
+    # Call the review performance function
+    review_safety(user_input, manager, mail)
     # Fetch employee and manager info
-    employee = employee_collection.find_one({"name": employee_name})
-    if employee:
-        employee_email = employee.get("email")
-        manager_name = employee.get("manager_name")
-        manager_email = employee.get("manager_email")
+    # employee = employee_collection.find_one({"name": employee_name})
+    # if employee:
+    #     employee_email = employee.get("email")
+    #     manager_name = employee.get("manager_name")
+    #     manager_email = employee.get("manager_email")
 
-        user_input_AM = {
-            "employee_name": employee_name,
-            "safety_matrix": safety_ratings
+    #     user_input_AM = {
+    #         "employee_name": employee_name,
+    #         "safety_matrix": safety_ratings
+    #     }
+
+    #     # Optional confirmation to employee
+    #     # if employee_email:
+    #     #     send_safety_matrix_prompt(employee_email, employee_name)
+
+    #     # Check for issues and notify manager
+    #     if manager_email and manager_name:
+    #         print(f"🔍 Triggering safety review for {employee_name}")
+    #         review_safety(user_input_AM, manager_name, manager_email)
+
+    # if result.modified_count:
+    #     logging.info(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
+    #     print(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
+    # else:
+    #     logging.warning(f"⚠️ No updates made. Entry may already be up-to-date.")
+    #     print(f"⚠️ No updates made for {employee_name}")
+
+
+
+if __name__ == "__main__":
+    employee_name = "John Doe"
+    manager_name = "Jane Smith"
+    manager_email = "naveen@singhautomation.com"  # Replace with real manager email
+
+    user_input_AM = {
+        "employee_name": employee_name,
+        "safety_matrix": {
+            "Are you wearing all required Personal Protective Equipment (PPE) for your task today?": "Green",
+            "Have you inspected your tools, machines, or equipment for any visible damage or malfunction?":"Red",
+            "Is your work area clean, organized, and free from slip/trip hazards?": "Green",
+            "Are all emergency stop buttons and safety interlocks functional and accessible?": "Green",
+            "Are all wires, cables, and hoses properly managed to avoid entanglement or tripping?": "Green",
+            "Have you seen or experienced anything unsafe today that should be reported?": "Green",
+            "Have you reviewed and acknowledged today's safety briefing or posted instructions?": "Green"
         }
+    }
 
-        # Optional confirmation to employee
-        # if employee_email:
-        #     send_safety_matrix_prompt(employee_email, employee_name)
+    # Trigger manual safety alert
+    review_safety(user_input_AM, manager_name, manager_email)
 
-        # Check for issues and notify manager
-        if manager_email and manager_name:
-            print(f"🔍 Triggering safety review for {employee_name}")
-            review_safety(user_input_AM, manager_name, manager_email)
 
-    if result.modified_count:
-        logging.info(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
-        print(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
-    else:
-        logging.warning(f"⚠️ No updates made. Entry may already be up-to-date.")
-        print(f"⚠️ No updates made for {employee_name}")
+
+
+
+
+
