@@ -448,26 +448,26 @@ def save_safety_matrix(employee_name, date, safety_ratings):
 
 
 
-if __name__ == "__main__":
-    employee_name = "John Doe"
-    manager_name = "Jane Smith"
-    manager_email = "naveen@singhautomation.com"  # Replace with real manager email
+# if __name__ == "__main__":
+#     employee_name = "John Doe"
+#     manager_name = "Jane Smith"
+#     manager_email = "naveen@singhautomation.com"  # Replace with real manager email
 
-    user_input_AM = {
-        "employee_name": employee_name,
-        "safety_matrix": {
-            "Are you wearing all required Personal Protective Equipment (PPE) for your task today?": "Green",
-            "Have you inspected your tools, machines, or equipment for any visible damage or malfunction?":"Red",
-            "Is your work area clean, organized, and free from slip/trip hazards?": "Green",
-            "Are all emergency stop buttons and safety interlocks functional and accessible?": "Green",
-            "Are all wires, cables, and hoses properly managed to avoid entanglement or tripping?": "Green",
-            "Have you seen or experienced anything unsafe today that should be reported?": "Green",
-            "Have you reviewed and acknowledged today's safety briefing or posted instructions?": "Green"
-        }
-    }
+#     user_input_AM = {
+#         "employee_name": employee_name,
+#         "safety_matrix": {
+#             "Are you wearing all required Personal Protective Equipment (PPE) for your task today?": "Green",
+#             "Have you inspected your tools, machines, or equipment for any visible damage or malfunction?":"Red",
+#             "Is your work area clean, organized, and free from slip/trip hazards?": "Green",
+#             "Are all emergency stop buttons and safety interlocks functional and accessible?": "Green",
+#             "Are all wires, cables, and hoses properly managed to avoid entanglement or tripping?": "Green",
+#             "Have you seen or experienced anything unsafe today that should be reported?": "Green",
+#             "Have you reviewed and acknowledged today's safety briefing or posted instructions?": "Green"
+#         }
+#     }
 
-    # Trigger manual safety alert
-    review_safety(user_input_AM, manager_name, manager_email)
+#     # Trigger manual safety alert
+#     review_safety(user_input_AM, manager_name, manager_email)
 
 
 
