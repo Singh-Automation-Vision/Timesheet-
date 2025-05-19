@@ -4,40 +4,6 @@ from email.message import EmailMessage
 from email.mime.text import MIMEText
 import logging
 from pymongo import MongoClient
-# def send_safety_email(employee_email, employee_name):
-#     try:
-#         msg = EmailMessage()
-#         msg['Subject'] = "Daily Safety Reminder – Thank You"
-#         msg['From'] = "timesheetsystem2025@gmail.com"
-#         msg['To'] = employee_email
-
-#         msg.set_content(
-#             f"Hi {employee_name},\n\n"
-#             f"Please remember to follow all safety protocols during your workday.\n"
-#             f"• Wear appropriate PPE.\n"
-#             f"• Follow operational guidelines.\n"
-#             f"• Report any hazards immediately.\n\n"
-#             f"Stay safe!\n\n"
-#             f"Regards,\n"
-#             f"Safety & Timesheet Management System"
-#         )
-
-#         smtp_server = "smtp.gmail.com"
-#         smtp_port = 587
-#         sender_email = "timesheetsystem2025@gmail.com"
-#         sender_password = "mhuv nxdf ciqz igws"  # Gmail App Password
-
-#         with smtplib.SMTP(smtp_server, smtp_port) as server:
-#             server.starttls()
-#             server.login(sender_email, sender_password)
-#             server.send_message(msg)
-
-#         logging.info(f"✅ Safety email sent to {employee_email}")
-#         print(f"✅ Email sent to {employee_email}")  # ADD this
-
-#     except Exception as e:
-#         logging.error(f"❌ Failed to send safety email: {e}")
-#         print(f"❌ Error sending email: {e}")  # ADD this
 
 def send_safety_matrix_prompt(employee_email, employee_name):
     try:
@@ -73,44 +39,6 @@ def send_safety_matrix_prompt(employee_email, employee_name):
     except Exception as e:
         logging.error(f"❌ Failed to send safety matrix prompt: {e}")
         print(f"❌ Error sending prompt email: {e}")
-
-
-
-# def send_safety_email(employee_email, employee_name):
-#     try:
-#         msg = EmailMessage()
-#         msg['Subject'] = "Daily Safety Reminder – Thank You"
-#         msg['From'] = "timesheetsystem2025@gmail.com"
-#         msg['To'] = employee_email
-
-#         msg.set_content(
-#             f"Hi {employee_name},\n\n"
-#             # f"Thank you for filling out your AM sheet today.\n"
-#             f"Please remember to follow all safety protocols during your workday.\n"
-#             f"• Wear appropriate PPE.\n"
-#             f"• Follow operational guidelines.\n"
-#             f"• Report any hazards immediately.\n\n"
-#             f"Stay safe!\n\n"
-#             f"Regards,\n"
-#             f"Safety & Timesheet Management System"
-#         )
-
-#         smtp_server = "smtp.gmail.com"
-#         smtp_port = 587
-#         sender_email = "timesheetsystem2025@gmail.com"
-#         sender_password = "mhuv nxdf ciqz igws" # Replace with your Gmail App Password
-
-#         with smtplib.SMTP(smtp_server, smtp_port) as server:
-#             server.starttls()
-#             server.login(sender_email, sender_password)
-#             server.send_message(msg)
-
-#         logging.info(f"Safety email sent to {employee_email}")
-
-#     except Exception as e:
-#         logging.error(f"Failed to send safety email: {e}")
-
-
 
 
 def send_alert_safety_email(user_input_AM, flag_count, manager, mail):
@@ -153,17 +81,16 @@ def send_alert_safety_email(user_input_AM, flag_count, manager, mail):
 
 
 
-
 def review_safety(user_input_AM,manager,mail):    
     try:
          performance_params = [
-             user_input_AM["safety_ratings"]["Are you wearing all required Personal Protective Equipment (PPE) for your task today?"],
-             user_input_AM["safety_ratings"]["Have you inspected your tools, machines, or equipment for any visible damage or malfunction?"],
-             user_input_AM["safety_ratings"]["Is your work area clean, organized, and free from slip/trip hazards?"],
-             user_input_AM["safety_ratings"]["Are all emergency stop buttons and safety interlocks functional and accessible?"],
-             user_input_AM["safety_ratings"]["Are all wires, cables, and hoses properly managed to avoid entanglement or tripping?"],
-             user_input_AM["safety_ratings"]["Have you seen or experienced anything unsafe today that should be reported?"],
-             user_input_AM["safety_ratings"]["Have you reviewed and acknowledged today's safety briefing or posted instructions?"],
+             user_input_AM["safety_matrix"]["Are you wearing all required Personal Protective Equipment (PPE) for your task today?"],
+             user_input_AM["safety_matrix"]["Have you inspected your tools, machines, or equipment for any visible damage or malfunction?"],
+             user_input_AM["safety_matrix"]["Is your work area clean, organized, and free from slip/trip hazards?"],
+             user_input_AM["safety_matrix"]["Are all emergency stop buttons and safety interlocks functional and accessible?"],
+             user_input_AM["safety_matrix"]["Are all wires, cables, and hoses properly managed to avoid entanglement or tripping?"],
+             user_input_AM["safety_matrix"]["Have you seen or experienced anything unsafe today that should be reported?"],
+             user_input_AM["safety_matrix"]["Have you reviewed and acknowledged today's safety briefing or posted instructions?"],
          ]
          
          red_count = performance_params.count("Red")
