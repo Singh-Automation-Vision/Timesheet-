@@ -128,7 +128,9 @@ def review_safety(user_input_AM,manager,mail):
 #     else:
 #         return(f"⚠️ No updates made. Check if the entry exists or if ratings are identical.")
 
-def save_safety_matrix(employee_name,date,safety_ratings):
+
+#######
+def save_safety_matrix(employee_name, date, safety_ratings):
     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
     db = client["Timesheet"]
     am_collection = db["Employee_AM"]
@@ -157,18 +159,61 @@ def save_safety_matrix(employee_name,date,safety_ratings):
             "safety_matrix": safety_ratings
         }
 
-        # Send thank you email
-        if employee_email:
-            return(employee_name)
-
         # Send alert if issues
         if manager_email and manager_name:
             review_safety(user_input_AM, manager_name, manager_email)
+
+        # Optional: Send thank you or confirmation to employee (currently not implemented)
+        # if employee_email:
+        #     send_safety_matrix_prompt(employee_email, employee_name)
 
     if result.modified_count:
         logging.info(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
     else:
         logging.warning(f"⚠️ No updates made. Entry may already be up-to-date.")
+
+
+# def save_safety_matrix(employee_name,date,safety_ratings):
+#     client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+#     db = client["Timesheet"]
+#     am_collection = db["Employee_AM"]
+#     employee_collection = db["Employee_data"]
+
+#     recent_date = get_latest_date_for_safety(employee_name)
+#     if not recent_date:
+#         logging.warning(f"No recent AM sheet found for {employee_name}. Cannot save safety matrix.")
+#         return
+
+#     result = am_collection.update_one(
+#         {"employee_name": employee_name, "date": recent_date},
+#         {"$set": {"safety_matrix": safety_ratings}}
+#     )
+
+#     # Fetch employee email and manager info
+#     employee = employee_collection.find_one({"name": employee_name})
+#     if employee:
+#         employee_email = employee.get("email")
+#         manager_name = employee.get("manager_name")
+#         manager_email = employee.get("manager_email")
+
+#         # Rebuild structure needed for review_safety()
+#         user_input_AM = {
+#             "employee_name": employee_name,
+#             "safety_matrix": safety_ratings
+#         }
+
+#         # Send thank you email
+#         if employee_email:
+#             return(employee_name)
+
+#         # Send alert if issues
+#         if manager_email and manager_name:
+#             review_safety(user_input_AM, manager_name, manager_email)
+
+#     if result.modified_count:
+#         logging.info(f"✅ Safety matrix updated for {employee_name} on {recent_date}")
+#     else:
+#         logging.warning(f"⚠️ No updates made. Entry may already be up-to-date.")
 
 
 
