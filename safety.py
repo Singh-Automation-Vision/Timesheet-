@@ -227,7 +227,7 @@ def save_safety_matrix(employee_name,date,safety_ratings):
         # Rebuild structure needed for review_safety()
         user_input_AM = {
             "employee_name": employee_name,
-            "safety_ratings": safety_ratings
+            "safety_matrix": safety_ratings
         }
 
         # Send thank you email
