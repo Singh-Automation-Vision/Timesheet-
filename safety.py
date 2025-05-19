@@ -4,10 +4,45 @@ from email.message import EmailMessage
 from email.mime.text import MIMEText
 import logging
 from pymongo import MongoClient
-def send_safety_email(employee_email, employee_name):
+# def send_safety_email(employee_email, employee_name):
+#     try:
+#         msg = EmailMessage()
+#         msg['Subject'] = "Daily Safety Reminder – Thank You"
+#         msg['From'] = "timesheetsystem2025@gmail.com"
+#         msg['To'] = employee_email
+
+#         msg.set_content(
+#             f"Hi {employee_name},\n\n"
+#             f"Please remember to follow all safety protocols during your workday.\n"
+#             f"• Wear appropriate PPE.\n"
+#             f"• Follow operational guidelines.\n"
+#             f"• Report any hazards immediately.\n\n"
+#             f"Stay safe!\n\n"
+#             f"Regards,\n"
+#             f"Safety & Timesheet Management System"
+#         )
+
+#         smtp_server = "smtp.gmail.com"
+#         smtp_port = 587
+#         sender_email = "timesheetsystem2025@gmail.com"
+#         sender_password = "mhuv nxdf ciqz igws"  # Gmail App Password
+
+#         with smtplib.SMTP(smtp_server, smtp_port) as server:
+#             server.starttls()
+#             server.login(sender_email, sender_password)
+#             server.send_message(msg)
+
+#         logging.info(f"✅ Safety email sent to {employee_email}")
+#         print(f"✅ Email sent to {employee_email}")  # ADD this
+
+#     except Exception as e:
+#         logging.error(f"❌ Failed to send safety email: {e}")
+#         print(f"❌ Error sending email: {e}")  # ADD this
+
+def send_safety_matrix_prompt(employee_email, employee_name):
     try:
         msg = EmailMessage()
-        msg['Subject'] = "Daily Safety Reminder – Thank You"
+        msg['Subject'] = "Please Fill Out Your Daily Safety Matrix"
         msg['From'] = "timesheetsystem2025@gmail.com"
         msg['To'] = employee_email
 
@@ -25,19 +60,20 @@ def send_safety_email(employee_email, employee_name):
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
         sender_email = "timesheetsystem2025@gmail.com"
-        sender_password = "mhuv nxdf ciqz igws"  # Gmail App Password
+        sender_password = "mhuv nxdf ciqz igws"
 
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
             server.login(sender_email, sender_password)
             server.send_message(msg)
 
-        logging.info(f"✅ Safety email sent to {employee_email}")
-        print(f"✅ Email sent to {employee_email}")  # ADD this
+        logging.info(f"📧 Safety matrix prompt sent to {employee_email}")
+        print(f"📧 Prompt email sent to {employee_email}")
 
     except Exception as e:
-        logging.error(f"❌ Failed to send safety email: {e}")
-        print(f"❌ Error sending email: {e}")  # ADD this
+        logging.error(f"❌ Failed to send safety matrix prompt: {e}")
+        print(f"❌ Error sending prompt email: {e}")
+
 
 
 # def send_safety_email(employee_email, employee_name):
@@ -195,8 +231,8 @@ def save_safety_matrix(employee_name,date,safety_ratings):
         }
 
         # Send thank you email
-        if employee_email:
-            send_safety_email(employee_email, employee_name)
+        # if employee_email:
+        #     send_safety_email(employee_email, employee_name)
 
         # Send alert if issues
         if manager_email and manager_name:

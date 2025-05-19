@@ -12,7 +12,7 @@ from review_leave import *
 from datetime import datetime
 from flask_apscheduler import APScheduler
 # from scik_leave import accrue_sick_leave_for_all_employees
-from safety import save_safety_matrix, send_safety_email
+from safety import save_safety_matrix, send_safety_email, send_safety_matrix_prompt
 from sick_leave import accrue_sick_leave_for_employee
 import os
 
@@ -85,23 +85,49 @@ def login():
  # 
  # 
  # 
+# @application.route("/api/AM", methods=["POST"])
+# def add_AM_timesheet():
+#     data = request.json
+#     print(f"🔍 Incoming AM data: {data}")  # ADD this
+
+#     add_AM_data(data)
+
+#     employee_name = data.get("employee_name")
+#     employee_email = data.get("email")  
+
+#     if employee_email and employee_name:
+#         print(f"Sending email to {employee_email}")  # ADD this
+#         send_safety_email(employee_email, employee_name)
+
+#     return jsonify({"message": "Timesheet added successfully and email sent "})
+###################################
+   
 @application.route("/api/AM", methods=["POST"])
 def add_AM_timesheet():
     data = request.json
-    print(f"🔍 Incoming AM data: {data}")  # ADD this
+    print(f"🔍 Incoming AM data: {data}")
 
-    add_AM_data(data)
+    add_AM_data(data)  # Store AM timesheet
 
     employee_name = data.get("employee_name")
-    employee_email = data.get("email")  
+    employee_email = data.get("email")  # Optional
 
+    # 🔍 Fetch email from Employee_data if not in payload
+    if not employee_email and employee_name:
+        client = MongoClient("mongodb+srv://timesheetsystem:SinghAutomation2025@cluster0.alcdn.mongodb.net/")
+        db = client["Timesheet"]
+        employee_collection = db["Employee_data"]
+
+        employee = employee_collection.find_one({"name": employee_name})
+        if employee:
+            employee_email = employee.get("email")
+
+    # 📧 Send reminder to fill safety matrix
     if employee_email and employee_name:
-        print(f"Sending email to {employee_email}")  # ADD this
-        send_safety_email(employee_email, employee_name)
+        print(f"📧 Sending reminder to {employee_email} to complete safety matrix")
+        send_safety_matrix_prompt(employee_email, employee_name)
 
-    return jsonify({"message": "Timesheet added successfully and email sent "})
-###################################
-   
+    return jsonify({"message": "AM timesheet added. Safety reminder email sent."})
 
 
 # Route to submit PM timesheet
