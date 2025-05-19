@@ -158,8 +158,8 @@ def save_safety_matrix(employee_name,date,safety_ratings):
         }
 
         # Send thank you email
-        # if employee_email:
-        #     send_safety_email(employee_email, employee_name)
+        if employee_email:
+            return(employee_name)
 
         # Send alert if issues
         if manager_email and manager_name:
