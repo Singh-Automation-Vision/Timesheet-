@@ -12,7 +12,7 @@ from review_leave import *
 from datetime import datetime
 from flask_apscheduler import APScheduler
 # from scik_leave import accrue_sick_leave_for_all_employees
-from safety import save_safety_matrix, send_safety_email, send_safety_matrix_prompt
+from safety import save_safety_matrix, send_safety_matrix_prompt
 from sick_leave import accrue_sick_leave_for_employee
 import os
 
