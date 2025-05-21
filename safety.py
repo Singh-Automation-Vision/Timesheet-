@@ -92,7 +92,7 @@ def review_safety(user_input_AM, manager, mail):
             user_input_AM["safety_matrix"]["Is your work area clean, organized, and free from slip/trip hazards?"],
             user_input_AM["safety_matrix"]["Are all emergency stop buttons and safety interlocks functional and accessible?"],
             user_input_AM["safety_matrix"]["Are all wires, cables, and hoses properly managed to avoid entanglement or tripping?"],
-            user_input_AM["safety_matrix"]["Have you seen or experienced anything unsafe today that should be reported?"],
+            user_input_AM["safety_matrix"]["Have you noticed safety protocols being properly followed around you today?"],
             user_input_AM["safety_matrix"]["Have you reviewed and acknowledged today's safety briefing or posted instructions?"],
         ]
 
